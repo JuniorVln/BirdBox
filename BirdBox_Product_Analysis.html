@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BirdBox — Análise de Produto & Nova Visão</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #18181f;
+    --surface-raised: #1e1e28;
+    --border: #2a2a36;
+    --text: #e8e8ef;
+    --text-secondary: #9a9ab0;
+    --accent: #6366f1;
+    --accent-soft: rgba(99,102,241,0.15);
+    --red: #ef4444;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 48px;
+  }
+
+  /* Cover Page */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cover-icon { font-size: 72px; margin-bottom: 20px; position: relative; }
+  .cover h1 {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .cover .subtitle {
+    font-size: 22px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .cover .meta {
+    color: var(--text-secondary);
+    font-size: 14px;
+    position: relative;
+    display: flex;
+    gap: 24px;
+  }
+  .cover .meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* Part Headers */
+  .part-header {
+    page-break-before: always;
+    padding: 60px 0 30px;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 40px;
+  }
+  .part-header .part-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .part-header h2 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  /* Section Headers */
+  h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 36px 0 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h3 .num {
+    font-size: 13px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  h4 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 28px;
+    font-size: 14px;
+  }
+  th {
+    background: var(--surface-raised);
+    color: var(--text);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Mermaid Diagrams */
+  .diagram-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0 28px;
+    overflow-x: auto;
+  }
+  .diagram-container .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+  .diagram-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  /* Callout Boxes */
+  .callout {
+    border-left: 4px solid;
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .callout-danger { border-color: var(--red); background: rgba(239,68,68,0.08); }
+  .callout-success { border-color: var(--green); background: rgba(34,197,94,0.08); }
+  .callout-warning { border-color: var(--yellow); background: rgba(234,179,8,0.08); }
+  .callout-info { border-color: var(--blue); background: rgba(59,130,246,0.08); }
+  .callout strong { color: var(--text); }
+  .callout p { color: var(--text-secondary); margin-top: 6px; }
+
+  /* Status Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-done { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .badge-partial { background: rgba(234,179,8,0.15); color: #facc15; }
+  .badge-missing { background: rgba(239,68,68,0.15); color: #f87171; }
+
+  /* Comparison Box */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .comparison-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .comparison-col.bad { border-top: 3px solid var(--red); }
+  .comparison-col.good { border-top: 3px solid var(--green); }
+  .comparison-col h5 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .comparison-col ul { list-style: none; font-size: 13px; color: var(--text-secondary); }
+  .comparison-col ul li { padding: 4px 0; }
+  .comparison-col.bad h5 { color: var(--red); }
+  .comparison-col.good h5 { color: var(--green); }
+
+  /* Module Cards */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .module-card .icon { font-size: 28px; margin-bottom: 8px; }
+  .module-card h5 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .module-card p { font-size: 12px; color: var(--text-secondary); }
+
+  /* Priority Tags */
+  .priority { font-weight: 700; font-size: 12px; }
+  .p0 { color: var(--red); }
+  .p1 { color: var(--yellow); }
+  .p2 { color: var(--green); }
+  .p3 { color: var(--blue); }
+
+  /* Blockquote */
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 14px 20px;
+    margin: 20px 0;
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text);
+  }
+
+  p { margin: 10px 0; font-size: 15px; color: var(--text-secondary); }
+  strong { color: var(--text); }
+  code {
+    background: var(--surface-raised);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* Print */
+  @media print {
+    body { background: var(--bg) !important; }
+    .container { padding: 24px 36px; }
+    .cover { min-height: 90vh; }
+    .diagram-container { page-break-inside: avoid; }
+    table { page-break-inside: avoid; }
+  }
+
+  .page-break { page-break-before: always; }
+
+  /* Pricing table special */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .pricing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .pricing-card.featured { border-color: var(--accent); border-width: 2px; }
+  .pricing-card .plan-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .pricing-card .plan-price { font-size: 28px; font-weight: 800; color: var(--accent); margin: 8px 0; }
+  .pricing-card .plan-price span { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .pricing-card ul { list-style: none; text-align: left; font-size: 12px; color: var(--text-secondary); margin-top: 12px; }
+  .pricing-card ul li { padding: 3px 0; }
+  .pricing-card ul li::before { content: '✓ '; color: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="cover-icon">🐦</div>
+  <h1>BirdBox</h1>
+  <p class="subtitle">Análise de Produto & Nova Visão Estratégica</p>
+  <div class="meta">
+    <span>📅 16 de Fevereiro de 2026</span>
+    <span>👤 Product Manager</span>
+    <span>📄 Versão 2.0</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== PARTE 1 ===== -->
+<div class="part-header">
+  <div class="part-label">Parte 1</div>
+  <h2>Análise do Sistema Atual</h2>
+</div>
+
+<h3><span class="num">1.1</span> O que é o Sistema Hoje</h3>
+<p>O <strong>Pitch AI</strong> (nome interno: BirdBox) é um SaaS que automatiza cold outreach para web designers: descobre negócios locais → faz scraping do site → gera redesign com IA → envia email com preview → rastreia engajamento.</p>
+
+<h4>Stack Técnica</h4>
+<table>
+  <thead><tr><th>Camada</th><th>Tecnologia</th></tr></thead>
+  <tbody>
+    <tr><td>Frontend</td><td>React 19 + TypeScript + Tailwind CSS + Framer Motion</td></tr>
+    <tr><td>Backend</td><td>Supabase (Auth, DB, Storage, Edge Functions)</td></tr>
+    <tr><td>Scraping</td><td>Firecrawl API</td></tr>
+    <tr><td>Leads</td><td>Google Maps Places API</td></tr>
+    <tr><td>IA</td><td>Claude API (Anthropic)</td></tr>
+    <tr><td>Email</td><td>Gmail OAuth 2.0</td></tr>
+    <tr><td>Warm-up</td><td>Warmmy.io</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">1.2</span> Fluxo Atual do Sistema</h3>
+<div class="diagram-container">
+  <div class="diagram-label">Fluxo completo: do lead ao feedback</div>
+  <div class="mermaid">
+flowchart TD
+    A["🏠 Landing Page"] --> B{"Cadastro / Login"}
+    B --> C["📊 Dashboard"]
+    C --> D["🔍 Buscar Leads\n(Google Maps)"]
+    C --> E["✏️ Criar Pitch Manual"]
+    D --> F["📋 Lista de Leads"]
+    F --> G["Selecionar Lead"]
+    G --> H["📝 Formulário\n(Nome + URL)"]
+    E --> H
+    H --> I["🕷️ Scraping\n(Firecrawl)"]
+    I --> J["🎨 Template\n(4 opções)"]
+    J --> K["🤖 Gerar Site\n(Claude AI)"]
+    K --> L["✅ Pitch Criado!"]
+    L --> M["👁️ Preview"]
+    L --> N["📧 Email"]
+    L --> O["📊 Tracking"]
+    N --> P["📬 Email + pixel"]
+    P --> Q["👤 Lead abre → visita → feedback"]
+  </div>
+</div>
+
+<h4>Os 4 Steps da Criação</h4>
+<table>
+  <thead><tr><th>Step</th><th>Nome</th><th>O que acontece</th></tr></thead>
+  <tbody>
+    <tr><td>0</td><td><strong>Details</strong></td><td>Formulário: nome + URL do site</td></tr>
+    <tr><td>1</td><td><strong>Analysis</strong></td><td>Scraping via Firecrawl (barra de progresso)</td></tr>
+    <tr><td>2</td><td><strong>Template</strong></td><td>Escolha entre 4 templates (com preview)</td></tr>
+    <tr><td>3</td><td><strong>Complete</strong></td><td>Pitch gerado com link público</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">1.3</span> Status de Implementação</h3>
+<table>
+  <thead><tr><th>Feature</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>Auth (Supabase)</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Landing Page completa</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Dashboard com métricas</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Busca de Leads (Google Maps)</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Criação Manual de Pitch</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Scraping (Firecrawl)</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>4 Templates HTML</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Geração com Claude + fallback</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Preview público /p/:id</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Tracking de views</td><td><span class="badge badge-done">✅ Implementado</span></td></tr>
+    <tr><td>Envio de Email (Gmail)</td><td><span class="badge badge-partial">⚠️ Parcial</span></td></tr>
+    <tr><td>Feedback System</td><td><span class="badge badge-partial">⚠️ Parcial</span></td></tr>
+    <tr><td>Email Warm-up</td><td><span class="badge badge-missing">❌ Não implementado</span></td></tr>
+    <tr><td>Analytics Dashboard</td><td><span class="badge badge-missing">❌ Não implementado</span></td></tr>
+    <tr><td>Edição inline</td><td><span class="badge badge-missing">❌ Não implementado</span></td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">1.4</span> Mapa Competitivo</h3>
+<table>
+  <thead><tr><th>Ferramenta</th><th>O que faz</th><th>Preço</th><th>Gap vs. BirdBox</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Lemlist</strong></td><td>Cold email + personalização</td><td>$59-99/mês</td><td>Genérico, não foca em criativos</td></tr>
+    <tr><td><strong>Instantly.ai</strong></td><td>Cold email em massa</td><td>$30-78/mês</td><td>Sem foco em design/web</td></tr>
+    <tr><td><strong>Apollo.io</strong></td><td>Lead DB + enrichment</td><td>$49-99/mês</td><td>Sem auditoria nem proposta</td></tr>
+    <tr><td><strong>GigRadar</strong></td><td>Upwork auto-bidding</td><td>$29-99/mês</td><td>Só Upwork, sem prospecção direta</td></tr>
+    <tr><td><strong>BidPilotPro</strong></td><td>Proposta AI Upwork</td><td>$19-49/mês</td><td>Só propostas, sem inteligência</td></tr>
+    <tr><td><strong>WebScore.ai</strong></td><td>Auditoria de sites</td><td>Free-$199/mês</td><td>Não faz outreach</td></tr>
+  </tbody>
+</table>
+
+<!-- ===== PARTE 2 ===== -->
+<div class="part-header">
+  <div class="part-label">Parte 2</div>
+  <h2>Problemas & Pivô Estratégico</h2>
+</div>
+
+<h3><span class="num">2.1</span> Por que o Site Gerado por IA Não Funciona</h3>
+
+<div class="callout callout-danger">
+  <strong>⚠️ Mostrar um site feito por IA é tirar um tiro no próprio pé.</strong>
+  <p>Em vez de valorizar o trabalho do criativo, mostra que qualquer um pode fazer — desvalorizando o serviço que o designer quer vender.</p>
+</div>
+
+<table>
+  <thead><tr><th>Problema</th><th>Consequência</th></tr></thead>
+  <tbody>
+    <tr><td>Lead vê site feito em 60s por IA</td><td>Pensa: "Por que pagar R$5.000 se IA faz grátis?"</td></tr>
+    <tr><td>Resultado genérico</td><td>"Bonito, mas não é pra mim"</td></tr>
+    <tr><td>Desvaloriza o trabalho do designer</td><td>Compete contra quem deveria ajudar</td></tr>
+    <tr><td>Não prova nada sobre o negócio do lead</td><td>Falta contexto e personalização real</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">2.2</span> O que Realmente Convence</h3>
+
+<div class="comparison">
+  <div class="comparison-col bad">
+    <h5>❌ Abordagem Errada</h5>
+    <ul>
+      <li>❌ "Fiz um site bonito pra você"</li>
+      <li>❌ Template genérico de IA</li>
+      <li>❌ Email genérico pra info@</li>
+      <li>❌ 1 tentativa de contato</li>
+      <li>❌ Sem dados objetivos</li>
+    </ul>
+  </div>
+  <div class="comparison-col good">
+    <h5>✅ Abordagem Certa</h5>
+    <ul>
+      <li>✅ "Seu site tem 5 problemas — aqui os dados"</li>
+      <li>✅ Portfólio real com cases</li>
+      <li>✅ Mensagem pro DECISOR</li>
+      <li>✅ Sequência de 5-7 touches</li>
+      <li>✅ Auditoria com métricas reais</li>
+    </ul>
+  </div>
+</div>
+
+<h3><span class="num">2.3</span> Prospecção Atual vs. Profissional</h3>
+
+<div class="comparison">
+  <div class="comparison-col bad">
+    <h5>Prospecção Rasa (Google Maps)</h5>
+    <ul>
+      <li>Nome do negócio</li>
+      <li>Endereço</li>
+      <li>Telefone genérico</li>
+      <li>info@empresa.com</li>
+      <li>Rating Google</li>
+    </ul>
+  </div>
+  <div class="comparison-col good">
+    <h5>Prospecção Profissional (Nova Visão)</h5>
+    <ul>
+      <li>☎️ Telefone do <strong>DECISOR</strong></li>
+      <li>📧 Email do <strong>DONO/GERENTE</strong></li>
+      <li>💼 LinkedIn do decisor</li>
+      <li>🌐 Análise completa do site</li>
+      <li>📊 Tech stack (WordPress? Wix?)</li>
+      <li>💰 Porte da empresa</li>
+      <li>📱 Presença em redes sociais</li>
+      <li>📈 Sinais de crescimento</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== PARTE 3 ===== -->
+<div class="part-header">
+  <div class="part-label">Parte 3</div>
+  <h2>A Nova Visão do Produto</h2>
+</div>
+
+<h3><span class="num">3.1</span> Reposicionamento</h3>
+
+<div class="comparison">
+  <div class="comparison-col bad">
+    <h5>❌ Antes</h5>
+    <ul>
+      <li>"Gerador de sites com IA que envia emails"</li>
+    </ul>
+  </div>
+  <div class="comparison-col good">
+    <h5>✅ Depois</h5>
+    <ul>
+      <li>"Central de inteligência comercial para profissionais criativos"</li>
+    </ul>
+  </div>
+</div>
+
+<p>O BirdBox vira uma <strong>máquina de prospecção inteligente</strong> que serve:</p>
+<table>
+  <thead><tr><th>Persona</th><th>Busca por</th><th>Tipo de Auditoria</th></tr></thead>
+  <tbody>
+    <tr><td>🌐 <strong>Web Designer</strong></td><td>Empresas com sites ruins/antigos</td><td>SEO, Speed, Mobile, Design</td></tr>
+    <tr><td>🎨 <strong>Brand Designer</strong></td><td>Empresas sem ID visual profissional</td><td>Consistência de marca, logo, materiais</td></tr>
+    <tr><td>🎬 <strong>Motion Designer</strong></td><td>Empresas que precisam de vídeo</td><td>Presença em vídeo, YouTube, reels</td></tr>
+    <tr><td>💻 <strong>UI/UX Designer</strong></td><td>Apps/SaaS com UX fraca</td><td>App Store reviews, usabilidade</td></tr>
+    <tr><td>📱 <strong>Social Media</strong></td><td>Empresas com feed fraco</td><td>Frequência, qualidade, engajamento</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">3.2</span> Novo Fluxo Completo</h3>
+<div class="diagram-container">
+  <div class="diagram-label">Fluxo de prospecção inteligente</div>
+  <div class="mermaid">
+flowchart TD
+    subgraph FONTES["📡 FONTES DE LEADS"]
+        F1["🗺️ Google Maps"]
+        F2["💼 LinkedIn"]
+        F3["🟢 Upwork"]
+        F4["🟠 Behance/Dribbble"]
+        F5["📸 Instagram"]
+    end
+    subgraph INTEL["🔍 INTELIGÊNCIA"]
+        I1["👤 Decisor identificado"]
+        I2["📧 Email direto"]
+        I3["🌐 Análise do site"]
+        I4["🏢 Porte da empresa"]
+        I5["📊 Score de oportunidade"]
+    end
+    subgraph ACAO["🎯 AÇÃO"]
+        A1["📋 Auditoria automática"]
+        A2["📄 Proposta personalizada"]
+        A3["📧 Email pro decisor"]
+        A4["💬 LinkedIn DM"]
+        A5["📱 WhatsApp"]
+        A6["📝 Proposta Upwork"]
+    end
+    subgraph CRM["📊 PIPELINE CRM"]
+        C1["🆕 Novo"]
+        C2["📤 Contactado"]
+        C3["👀 Visualizou"]
+        C4["💬 Respondeu"]
+        C5["🤝 Fechou"]
+    end
+    FONTES --> INTEL
+    INTEL --> ACAO
+    ACAO --> CRM
+  </div>
+</div>
+
+<h3><span class="num">3.3</span> Módulo: Upwork Job Hunter</h3>
+<p>Sistema que busca jobs ativos no Upwork, filtra os relevantes e gera propostas personalizadas com IA.</p>
+
+<div class="diagram-container">
+  <div class="diagram-label">Fluxo Upwork: busca → proposta</div>
+  <div class="mermaid">
+flowchart LR
+    A["⚙️ Perfil\nSkills, budget,\nidiomas"] --> B["🔍 Buscar Jobs\n(Upwork API)"]
+    B --> C["📋 Filtrados\nBudget ✓\nSkills ✓\nClient ✓"]
+    C --> D["🤖 Gerar\nProposta (IA)"]
+    D --> E["📝 Revisar\n& Enviar"]
+  </div>
+</div>
+
+<h4>Fontes técnicas</h4>
+<table>
+  <thead><tr><th>Método</th><th>Viabilidade</th><th>Risco</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Upwork API oficial</strong> (REST/GraphQL)</td><td>✅ Alta</td><td>Baixo</td></tr>
+    <tr><td>Scraping (Apify/ScrapingBee)</td><td>✅ Funciona</td><td>Médio (ToS)</td></tr>
+    <tr><td>RSS Feeds por categoria</td><td>✅ Simples</td><td>Baixo — dados limitados</td></tr>
+  </tbody>
+</table>
+
+<h4>Conteúdo da proposta gerada</h4>
+<table>
+  <thead><tr><th>Seção</th><th>Conteúdo</th><th>Fonte</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Saudação</strong></td><td>Personalizada com nome do cliente</td><td>Dados do job</td></tr>
+    <tr><td><strong>Entendi seu problema</strong></td><td>Parafraseando o job description</td><td>IA analisa o job</td></tr>
+    <tr><td><strong>Minha experiência</strong></td><td>Cases relevantes do portfólio</td><td>Perfil do usuário</td></tr>
+    <tr><td><strong>Como resolvo</strong></td><td>Plano de ação em 3-5 passos</td><td>IA + template</td></tr>
+    <tr><td><strong>Timeline</strong></td><td>Estimativa realista</td><td>Budget + complexidade</td></tr>
+    <tr><td><strong>CTA</strong></td><td>Convite para conversar</td><td>Template</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">3.4</span> Auditoria por Disciplina</h3>
+<div class="diagram-container">
+  <div class="diagram-label">Auditorias especializadas por tipo de criativo</div>
+  <div class="mermaid">
+flowchart TD
+    A["Tipo de Profissional"] --> B{"Qual disciplina?"}
+    B --> C["🌐 Web Design"]
+    C --> C1["SEO Score\nPage Speed\nMobile\nDesign moderno\nSSL"]
+    B --> D["🎨 Branding"]
+    D --> D1["Logo profissional?\nConsistência visual\nPresença online\nGoogle Business\nMaterial"]
+    B --> E["🎬 Motion"]
+    E --> E1["Vídeo institucional?\nConteúdo em vídeo\nConcorrentes\nYouTube"]
+    B --> F["💻 UI/UX"]
+    F --> F1["App Store rating\nReviews negativas\nFluxos confusos\nAcessibilidade"]
+    B --> G["📱 Social"]
+    G --> G1["Frequência\nQualidade visual\nEngajamento\nConsistência"]
+  </div>
+</div>
+
+<h4>APIs por disciplina</h4>
+<table>
+  <thead><tr><th>Disciplina</th><th>Fonte de dados</th><th>API/Método</th></tr></thead>
+  <tbody>
+    <tr><td>Web Design</td><td>Site do lead</td><td>Lighthouse API, BuiltWith, Wappalyzer</td></tr>
+    <tr><td>Branding</td><td>Redes sociais + Google</td><td>Instagram API, Google Business Profile</td></tr>
+    <tr><td>Motion</td><td>YouTube + Instagram</td><td>YouTube Data API, Instagram Graph API</td></tr>
+    <tr><td>UI/UX</td><td>App stores + reviews</td><td>App Store Connect, Google Play</td></tr>
+    <tr><td>Social Media</td><td>Instagram + LinkedIn</td><td>Instagram Graph API, LinkedIn API</td></tr>
+    <tr><td><strong>Todas</strong></td><td>Decisores</td><td>Hunter.io, Apollo.io, LinkedIn Sales Nav</td></tr>
+    <tr><td><strong>Todas</strong></td><td>Enrichment</td><td>Clearbit, Snov.io, Lusha</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">3.5</span> Website Audit Engine</h3>
+<div class="diagram-container">
+  <div class="diagram-label">Motor de auditoria — pilar central para web designers</div>
+  <div class="mermaid">
+flowchart LR
+    A["URL do Lead"] --> B["Audit Engine"]
+    B --> C["📱 Mobile\n35/100"]
+    B --> D["⚡ Speed\n42/100"]
+    B --> E["🔍 SEO\n28/100"]
+    B --> F["🎨 Design\n55/100"]
+    B --> G["🔒 Security\n70/100"]
+    C --> H["📊 Score: 42/100"]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+  </div>
+</div>
+
+<div class="callout callout-success">
+  <strong>💡 Por que a auditoria muda tudo:</strong>
+  <p>1) O lead recebe algo <strong>valioso</strong> (diagnóstico grátis). 2) O designer tem <strong>dados</strong> para justificar preço. 3) O pitch vira <strong>mini-consultoria</strong>. 4) A <strong>taxa de resposta sobe</strong> porque entrega valor antes de pedir qualquer coisa.</p>
+</div>
+
+<!-- ===== PARTE 4 ===== -->
+<div class="part-header">
+  <div class="part-label">Parte 4</div>
+  <h2>Visão Final & Roadmap</h2>
+</div>
+
+<h3><span class="num">4.1</span> Os 7 Módulos do Produto</h3>
+<div class="modules-grid">
+  <div class="module-card">
+    <div class="icon">🔍</div>
+    <h5>PROSPECTOR</h5>
+    <p>Busca inteligente de leads multi-fonte: Google Maps, LinkedIn, Upwork, Instagram, Behance</p>
+  </div>
+  <div class="module-card">
+    <div class="icon">🧠</div>
+    <h5>INTEL ENGINE</h5>
+    <p>Enrichment do lead + identificação do decisor (nome, cargo, email pessoal, LinkedIn)</p>
+  </div>
+  <div class="module-card">
+    <div class="icon">📊</div>
+    <h5>AUDIT ENGINE</h5>
+    <p>Auditoria automática por disciplina: web, branding, motion, UX, social media</p>
+  </div>
+  <div class="module-card">
+    <div class="icon">📄</div>
+    <h5>PROPOSAL BUILDER</h5>
+    <p>Gerador de propostas personalizadas com diagnóstico + portfólio + CTA</p>
+  </div>
+  <div class="module-card">
+    <div class="icon">📧</div>
+    <h5>OUTREACH ENGINE</h5>
+    <p>Multi-canal: sequências de email + LinkedIn DM + WhatsApp automáticas</p>
+  </div>
+  <div class="module-card">
+    <div class="icon">💼</div>
+    <h5>UPWORK HUNTER</h5>
+    <p>Job search + filtros inteligentes + gerador de propostas com IA</p>
+  </div>
+  <div class="module-card" style="grid-column: span 2;">
+    <div class="icon">📊</div>
+    <h5>PIPELINE CRM</h5>
+    <p>Kanban de oportunidades (Novo → Contactado → Visualizou → Respondeu → Fechou) + follow-up automático</p>
+  </div>
+</div>
+
+<h3><span class="num">4.2</span> Antes vs. Depois</h3>
+<table>
+  <thead><tr><th>Aspecto</th><th>Sistema Atual</th><th>Nova Visão</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Público</strong></td><td>Só web designers</td><td>Web, Brand, Motion, UI/UX, Social</td></tr>
+    <tr><td><strong>Proposta</strong></td><td>"Fiz um site pra você"</td><td>"Seu [site/marca] tem problemas — provo com dados"</td></tr>
+    <tr><td><strong>Fonte de leads</strong></td><td>Só Google Maps</td><td>Maps + LinkedIn + Upwork + Instagram</td></tr>
+    <tr><td><strong>Contato</strong></td><td>info@empresa.com</td><td>Email direto do decisor</td></tr>
+    <tr><td><strong>Pitch</strong></td><td>Template HTML genérico</td><td>Auditoria + portfólio + proposta</td></tr>
+    <tr><td><strong>Canais</strong></td><td>1 email manual</td><td>Sequência multi-canal</td></tr>
+    <tr><td><strong>Follow-up</strong></td><td>Zero</td><td>5-7 touches automáticos</td></tr>
+    <tr><td><strong>Upwork</strong></td><td>Não existe</td><td>Hunter + gerador de propostas</td></tr>
+    <tr><td><strong>CRM</strong></td><td>Não existe</td><td>Pipeline kanban com status</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">4.3</span> Roadmap Priorizado</h3>
+<table>
+  <thead><tr><th>Fase</th><th>Feature</th><th>Impacto</th><th>Esforço</th></tr></thead>
+  <tbody>
+    <tr><td><span class="priority p0">P0</span></td><td>🔍 Prospector multi-fonte</td><td>Fundação</td><td>Alto</td></tr>
+    <tr><td><span class="priority p0">P0</span></td><td>🧠 Intel Engine (decisor + enrichment)</td><td>Core do pivô</td><td>Alto</td></tr>
+    <tr><td><span class="priority p0">P0</span></td><td>📊 Audit Engine (web)</td><td>Arma de venda</td><td>Médio</td></tr>
+    <tr><td><span class="priority p0">P0</span></td><td>📄 Proposal Builder</td><td>Substitui site IA</td><td>Médio</td></tr>
+    <tr><td><span class="priority p1">P1</span></td><td>📧 Email Sequence (3-5 emails)</td><td>Conversão</td><td>Médio</td></tr>
+    <tr><td><span class="priority p1">P1</span></td><td>📊 Pipeline CRM (kanban)</td><td>Organização</td><td>Médio</td></tr>
+    <tr><td><span class="priority p1">P1</span></td><td>💼 Upwork Hunter</td><td>Nova fonte</td><td>Médio</td></tr>
+    <tr><td><span class="priority p1">P1</span></td><td>📝 Upwork Proposal Generator</td><td>Diferenciador</td><td>Médio</td></tr>
+    <tr><td><span class="priority p2">P2</span></td><td>🎨 Multi-disciplina audits</td><td>Expansão público</td><td>Alto</td></tr>
+    <tr><td><span class="priority p2">P2</span></td><td>💬 LinkedIn + WhatsApp outreach</td><td>Multi-canal</td><td>Alto</td></tr>
+    <tr><td><span class="priority p2">P2</span></td><td>📊 Analytics avançado</td><td>Otimização</td><td>Médio</td></tr>
+    <tr><td><span class="priority p3">P3</span></td><td>🏷️ White-label agências</td><td>Recorrência</td><td>Alto</td></tr>
+    <tr><td><span class="priority p3">P3</span></td><td>📱 Portfólio integrado</td><td>Conveniência</td><td>Médio</td></tr>
+  </tbody>
+</table>
+
+<h3><span class="num">4.4</span> Planos de Monetização</h3>
+<div class="pricing-grid">
+  <div class="pricing-card">
+    <div class="plan-name">Free</div>
+    <div class="plan-price">$0</div>
+    <ul>
+      <li>5 auditorias/mês</li>
+      <li>10 leads</li>
+      <li>Sem Upwork</li>
+      <li>1 canal de outreach</li>
+    </ul>
+  </div>
+  <div class="pricing-card">
+    <div class="plan-name">Solo</div>
+    <div class="plan-price">$29<span>/mês</span></div>
+    <ul>
+      <li>50 auditorias/mês</li>
+      <li>100 leads</li>
+      <li>Upwork Hunter</li>
+      <li>Email sequences</li>
+    </ul>
+  </div>
+  <div class="pricing-card featured">
+    <div class="plan-name">Pro ⭐</div>
+    <div class="plan-price">$59<span>/mês</span></div>
+    <ul>
+      <li>Ilimitado</li>
+      <li>Multi-canal</li>
+      <li>CRM Pipeline</li>
+      <li>All audits</li>
+    </ul>
+  </div>
+  <div class="pricing-card">
+    <div class="plan-name">Agency</div>
+    <div class="plan-price">$99<span>/mês</span></div>
+    <ul>
+      <li>White-label</li>
+      <li>Multi-user</li>
+      <li>API access</li>
+      <li>Priority support</li>
+    </ul>
+  </div>
+</div>
+
+<div style="margin-top: 48px; padding: 32px; background: var(--accent-soft); border-radius: 12px; text-align: center;">
+  <h3 style="margin:0 0 12px; color: var(--accent);">💡 Resumo Executivo</h3>
+  <blockquote style="margin: 0; border: none; background: none; text-align: center; font-size: 17px;">
+    "O produto não faz o trabalho criativo.<br/>
+    O produto faz o criativo <strong>encontrar</strong> e <strong>convencer</strong> os clientes certos."
+  </blockquote>
+</div>
+
+</div><!-- /container -->
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#6366f1',
+      primaryTextColor: '#e8e8ef',
+      primaryBorderColor: '#4f46e5',
+      lineColor: '#6366f1',
+      secondaryColor: '#1e1e28',
+      tertiaryColor: '#18181f',
+      fontSize: '13px',
+      fontFamily: 'Inter, sans-serif',
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      useMaxWidth: true,
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BirdBox — Veja o que ninguém vê</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: #06060b;
+            --surface: #0d0d15;
+            --surface2: #13131f;
+            --border: #1e1e2e;
+            --text: #e8e8f0;
+            --text2: #8888a8;
+            --accent: #6366f1;
+            --accent2: #a855f7;
+            --red: #ef4444;
+            --green: #22c55e;
+            --yellow: #eab308;
+            --cyan: #06b6d4;
+            --orange: #f97316;
+            --glow: rgba(99, 102, 241, .15);
+            --glow2: rgba(168, 85, 247, .1);
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 80px 40px;
+            overflow: hidden
+        }
+
+        .section-inner {
+            max-width: 1100px;
+            width: 100%;
+            position: relative;
+            z-index: 2
+        }
+
+        h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 900;
+            letter-spacing: -3px;
+            line-height: 1
+        }
+
+        h2 {
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1
+        }
+
+        h3 {
+            font-size: clamp(18px, 2.5vw, 28px);
+            font-weight: 700;
+            letter-spacing: -0.5px
+        }
+
+        .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--accent);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .text2 {
+            color: var(--text2)
+        }
+
+        .mt1 {
+            margin-top: 12px
+        }
+
+        .mt2 {
+            margin-top: 24px
+        }
+
+        .mt3 {
+            margin-top: 40px
+        }
+
+        .mt4 {
+            margin-top: 64px
+        }
+
+        .mb2 {
+            margin-bottom: 24px
+        }
+
+        .mb3 {
+            margin-bottom: 40px
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .gap1 {
+            gap: 12px
+        }
+
+        .gap2 {
+            gap: 24px
+        }
+
+        .gap3 {
+            gap: 40px
+        }
+
+        .wrap {
+            flex-wrap: wrap
+        }
+
+        .center {
+            align-items: center;
+            justify-content: center
+        }
+
+        .col {
+            flex-direction: column
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px
+        }
+
+        .grid4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px
+        }
+
+        /* Radar Canvas */
+        #radar-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: .3;
+            pointer-events: none
+        }
+
+        /* Scan line */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: .3;
+            animation: scanDown 4s linear infinite;
+            z-index: 1;
+            pointer-events: none
+        }
+
+        @keyframes scanDown {
+            0% {
+                top: 0
+            }
+
+            100% {
+                top: 100%
+            }
+        }
+
+        /* Hero */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative
+        }
+
+        #hero .hero-radar {
+            width: 340px;
+            height: 340px;
+            position: relative;
+            margin-bottom: 48px
+        }
+
+        .radar-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(99, 102, 241, .15);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%)
+        }
+
+        .radar-ring:nth-child(1) {
+            width: 100%;
+            height: 100%
+        }
+
+        .radar-ring:nth-child(2) {
+            width: 70%;
+            height: 70%
+        }
+
+        .radar-ring:nth-child(3) {
+            width: 40%;
+            height: 40%
+        }
+
+        .radar-ring:nth-child(4) {
+            width: 10%;
+            height: 10%;
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--glow)
+        }
+
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            transform-origin: left center;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            animation: sweep 3s linear infinite;
+            opacity: .6
+        }
+
+        @keyframes sweep {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        .radar-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--accent);
+            opacity: 0;
+            animation: dotPulse 3s ease-in-out infinite
+        }
+
+        @keyframes dotPulse {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(.5)
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(16px, 2vw, 22px);
+            color: var(--text2);
+            max-width: 600px;
+            margin-top: 20px
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 13px;
+            color: var(--text2);
+            margin-top: 32px
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: blink 2s infinite
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .3
+            }
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text2);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: .5
+        }
+
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 2px solid var(--text2);
+            border-bottom: 2px solid var(--text2);
+            transform: rotate(45deg);
+            animation: scrollBounce 2s infinite
+        }
+
+        @keyframes scrollBounce {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(45deg)
+            }
+
+            50% {
+                transform: translateY(8px) rotate(45deg)
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: all .3s ease
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, .3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .4)
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block
+        }
+
+        .card h4 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px
+        }
+
+        .card p {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.6
+        }
+
+        .card-glow {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity .3s
+        }
+
+        .card:hover .card-glow {
+            opacity: 1
+        }
+
+        /* Section divider */
+        .divider {
+            width: 1px;
+            height: 80px;
+            background: linear-gradient(180deg, transparent, var(--accent), transparent);
+            margin: 0 auto
+        }
+
+        /* Comparison boxes */
+        .compare-box {
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid
+        }
+
+        .compare-bad {
+            background: rgba(239, 68, 68, .04);
+            border-color: rgba(239, 68, 68, .2)
+        }
+
+        .compare-good {
+            background: rgba(34, 197, 94, .04);
+            border-color: rgba(34, 197, 94, .2)
+        }
+
+        .compare-bad h4 {
+            color: var(--red)
+        }
+
+        .compare-good h4 {
+            color: var(--green)
+        }
+
+        .compare-list {
+            list-style: none;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text2)
+        }
+
+        .compare-list li {
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        /* Counter */
+        .counter {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .counter-label {
+            font-size: 13px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--surface2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.5s ease
+        }
+
+        /* Audit scores */
+        .score-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative
+        }
+
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid var(--border)
+        }
+
+        .score-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid;
+            border-color: inherit;
+            clip-path: inset(0 0 50% 0)
+        }
+
+        .score-low {
+            color: var(--red);
+            border-color: var(--red)
+        }
+
+        .score-mid {
+            color: var(--yellow);
+            border-color: var(--yellow)
+        }
+
+        .score-high {
+            color: var(--green);
+            border-color: var(--green)
+        }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            gap: 4px;
+            align-items: stretch
+        }
+
+        .pipeline-stage {
+            flex: 1;
+            padding: 20px 16px;
+            background: var(--surface);
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            transition: all .5s ease
+        }
+
+        .pipeline-stage.active {
+            background: var(--surface2);
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 30px var(--glow)
+        }
+
+        .pipeline-arrow {
+            color: var(--text2);
+            display: flex;
+            align-items: center;
+            font-size: 20px
+        }
+
+        .pipeline-count {
+            font-size: 28px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 8px
+        }
+
+        .pipeline-label {
+            font-size: 11px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px
+        }
+
+        /* Pricing */
+        .price-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all .3s;
+            position: relative
+        }
+
+        .price-card.featured {
+            border-color: var(--accent);
+            box-shadow: 0 0 40px var(--glow)
+        }
+
+        .price-card:hover {
+            transform: translateY(-8px)
+        }
+
+        .price-name {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px
+        }
+
+        .price-amount {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 16px 0 8px
+        }
+
+        .price-amount span {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text2)
+        }
+
+        .price-features {
+            list-style: none;
+            text-align: left;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text2)
+        }
+
+        .price-features li {
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--green);
+            font-weight: 700
+        }
+
+        .price-tag {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 16px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 1px
+        }
+
+        /* Roadmap */
+        .roadmap {
+            display: flex;
+            gap: 0;
+            position: relative
+        }
+
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border)
+        }
+
+        .roadmap-phase {
+            flex: 1;
+            position: relative;
+            padding: 24px 16px;
+            text-align: center
+        }
+
+        .roadmap-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--border);
+            margin: 0 auto 16px;
+            position: relative;
+            z-index: 2;
+            transition: all .5s
+        }
+
+        .roadmap-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent)
+        }
+
+        .roadmap-dot.done {
+            background: var(--green);
+            box-shadow: 0 0 20px rgba(34, 197, 94, .4)
+        }
+
+        /* CTA */
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 16px 40px;
+            border-radius: 100px;
+            border: none;
+            cursor: pointer;
+            transition: all .3s;
+            text-decoration: none
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 40px rgba(99, 102, 241, .4)
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px)
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px)
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(40px)
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(.8)
+        }
+
+        /* Responsive */
+        @media(max-width:768px) {
+            .section {
+                padding: 60px 20px
+            }
+
+            .grid2,
+            .grid3,
+            .grid4 {
+                grid-template-columns: 1fr
+            }
+
+            .pipeline {
+                flex-direction: column
+            }
+
+            .roadmap {
+                flex-direction: column
+            }
+
+            .roadmap::before {
+                display: none
+            }
+
+            #hero .hero-radar {
+                width: 240px;
+                height: 240px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BACKGROUND CANVAS -->
+    <canvas id="radar-canvas"></canvas>
+
+    <!-- ====== SECTION 1: HERO ====== -->
+    <section id="hero" class="section">
+        <div class="scan-line"></div>
+        <div class="hero-radar">
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-dot" style="top:25%;left:65%;animation-delay:.5s"></div>
+            <div class="radar-dot" style="top:60%;left:20%;animation-delay:1.2s"></div>
+            <div class="radar-dot" style="top:35%;left:80%;animation-delay:2s"></div>
+            <div class="radar-dot" style="top:75%;left:55%;animation-delay:.8s"></div>
+            <div class="radar-dot" style="top:15%;left:40%;animation-delay:1.8s"></div>
+        </div>
+        <h1 class="gradient-text">BirdBox</h1>
+        <p class="hero-subtitle mt2">Central de inteligência comercial para profissionais criativos. Veja o que ninguém
+            vê.</p>
+        <div class="hero-badge"><span class="dot"></span><span class="mono" style="font-size:12px">SISTEMA ATIVO —
+                DETECTANDO OPORTUNIDADES</span></div>
+        <div class="scroll-hint"><span>Scroll</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 2: O PROBLEMA ====== -->
+    <section class="section" id="problema">
+        <div class="section-inner">
+            <div class="label reveal mb2">O Problema</div>
+            <h2 class="reveal">A prospecção que você faz<br>está <span style="color:var(--red)">cega</span>.</h2>
+            <p class="text2 mt2 reveal" style="max-width:600px;font-size:17px">Você busca empresas no Google Maps, pega
+                um email genérico <span class="mono" style="color:var(--red)">info@empresa.com</span>, manda um template
+                e... silêncio.</p>
+            <div class="grid2 mt4">
+                <div class="compare-box compare-bad reveal-left">
+                    <h4>❌ Prospecção Rasa</h4>
+                    <ul class="compare-list">
+                        <li>📍 Nome do negócio e endereço</li>
+                        <li>📞 Telefone genérico</li>
+                        <li>📧 info@empresa.com</li>
+                        <li>⭐ Rating Google</li>
+                        <li>📩 1 email manual</li>
+                        <li>🔇 Zero follow-up</li>
+                    </ul>
+                </div>
+                <div class="compare-box compare-good reveal-right">
+                    <h4>✅ Prospecção Inteligente</h4>
+                    <ul class="compare-list">
+                        <li>👤 Nome e email do <strong style="color:var(--text)">DECISOR</strong></li>
+                        <li>💼 LinkedIn do dono/gerente</li>
+                        <li>🌐 Análise completa do site</li>
+                        <li>📊 Tech stack + SEO score</li>
+                        <li>📧 Sequência de 5-7 touches</li>
+                        <li>📈 Sinais de crescimento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 3: O PIVÔ ====== -->
+    <section class="section" id="pivo">
+        <div class="section-inner" style="text-align:center">
+            <div class="label reveal mb2">O Pivô Estratégico</div>
+            <h2 class="reveal">De <span style="color:var(--red);text-decoration:line-through">"gerador de
+                    sites"</span><br>para <span class="gradient-text">central de inteligência</span></h2>
+            <p class="text2 mt2 reveal" style="max-width:650px;margin:16px auto 0;font-size:17px">Mostrar um site feito
+                por IA desvaloriza o trabalho do designer. O lead pensa: <em>"por que pagar R$5.000 se a IA faz
+                    grátis?"</em></p>
+            <div class="grid2 mt4" style="max-width:800px;margin-left:auto;margin-right:auto">
+                <div class="card reveal-left" style="text-align:left">
+                    <span class="card-icon">🚫</span>
+                    <h4 style="color:var(--red)">Abordagem Errada</h4>
+                    <p>"Olha, fiz um site bonito pra você com IA!"</p>
+                    <p class="mt1" style="font-size:12px;color:var(--red)">→ Compete contra quem deveria ajudar</p>
+                </div>
+                <div class="card reveal-right" style="text-align:left;border-color:rgba(34,197,94,.3)">
+                    <span class="card-icon">✅</span>
+                    <h4 style="color:var(--green)">Abordagem Certa</h4>
+                    <p>"Seu site tem 5 problemas — aqui estão os dados."</p>
+                    <p class="mt1" style="font-size:12px;color:var(--green)">→ Entrega valor antes de pedir qualquer
+                        coisa</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 4: 7 MÓDULOS ====== -->
+    <section class="section" id="modulos">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">O Sistema</div>
+                <h2 class="reveal">7 módulos. <span class="gradient-text">Uma máquina.</span></h2>
+                <p class="text2 mt2 reveal" style="max-width:550px;margin:12px auto 0">Cada módulo é um setor do radar.
+                    Juntos, formam a central de inteligência completa.</p>
+            </div>
+            <div class="grid3 mt3">
+                <div class="card reveal-scale" style="cursor:pointer" onclick="this.classList.toggle('expanded')">
+                    <div class="card-glow"></div>
+                    <span class="card-icon">🔍</span>
+                    <h4>PROSPECTOR</h4>
+                    <p>Busca multi-fonte: Google Maps, LinkedIn, Upwork, Instagram, Behance</p>
+                    <div class="progress-bar mt2">
+                        <div class="progress-fill" style="width:0%;background:var(--accent)" data-width="95"></div>
+                    </div>
+                </div>
+                <div class="card reveal-scale" style="cursor:pointer">
+                    <div class="card-glow"></div>
+                    <span class="card-icon">🧠</span>
+                    <h4>INTEL ENGINE</h4>
+                    <p>Enrichment + identificação do decisor: nome, cargo, email pessoal, LinkedIn</p>
+                    <div class="progress-bar mt2">
+                        <div class="progress-fill" style="width:0%;background:var(--accent2)" data-width="85"></div>
+                    </div>
+                </div>
+                <div class="card reveal-scale" style="cursor:pointer">
+                    <div class="card-glow"></div>
+                    <span class="card-icon">📊</span>
+                    <h4>AUDIT ENGINE</h4>
+                    <p>Auditoria automática: SEO, Speed, Mobile, Design, Security — com scores reais</p>
+                    <div class="progress-bar mt2">
+                        <div class="progress-fill" style="width:0%;background:var(--cyan)" data-width="90"></div>
+                    </div>
+                </div>
+                <div class="card reveal-scale" style="cursor:pointer">
+                    <div class="card-glow"></div>
+                    <span class="card-icon">📄</span>
+                    <h4>PROPOSAL BUILDER</h4>
+                    <p>Propostas personalizadas com diagnóstico + portfólio + CTA irresistível</p>
+                    <div class="progress-bar mt2">
+                        <div class="progress-fill" style="width:0%;background:var(--green)" data-width="80"></div>
+                    </div>
+                </div>
+                <div class="card reveal-scale" style="cursor:pointer">
+                    <div class="card-glow"></div>
+                    <span class="card-icon">📧</span>
+                    <h4>OUTREACH ENGINE</h4>
+                    <p>Multi-canal: sequências de email + LinkedIn DM + WhatsApp automáticas</p>
+                    <div class="progress-bar mt2">
+                        <div class="progress-fill" style="width:0%;background:var(--orange)" data-width="75"></div>
+                    </div>
+                </div>
+                <div class="card reveal-scale" style="cursor:pointer">
+                    <div class="card-glow"></div>
+                    <span class="card-icon">💼</span>
+                    <h4>UPWORK HUNTER</h4>
+                    <p>Job search + filtros inteligentes + gerador de propostas com IA</p>
+                    <div class="progress-bar mt2">
+                        <div class="progress-fill" style="width:0%;background:var(--yellow)" data-width="70"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card reveal-scale mt2" style="cursor:pointer;text-align:center">
+                <div class="card-glow"></div>
+                <span class="card-icon">📊</span>
+                <h4>PIPELINE CRM</h4>
+                <p>Kanban de oportunidades: Novo → Contactado → Visualizou → Respondeu → Fechou + follow-up automático
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 5: AUDIT ENGINE ====== -->
+    <section class="section" id="audit">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">Audit Engine</div>
+                <h2 class="reveal">Escaneando: <span class="mono gradient-text">restaurante-bom.com.br</span></h2>
+                <p class="text2 mt2 reveal">O motor analisa 5 dimensões e gera um diagnóstico completo em segundos.</p>
+            </div>
+            <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap" class="mt3">
+                <div class="reveal-scale" style="text-align:center">
+                    <div class="score-ring score-low" data-score="35"><span>35</span></div>
+                    <div style="font-size:12px;color:var(--text2);margin-top:8px">📱 Mobile</div>
+                </div>
+                <div class="reveal-scale" style="text-align:center">
+                    <div class="score-ring score-low" data-score="42"><span>42</span></div>
+                    <div style="font-size:12px;color:var(--text2);margin-top:8px">⚡ Speed</div>
+                </div>
+                <div class="reveal-scale" style="text-align:center">
+                    <div class="score-ring score-low" data-score="28"><span>28</span></div>
+                    <div style="font-size:12px;color:var(--text2);margin-top:8px">🔍 SEO</div>
+                </div>
+                <div class="reveal-scale" style="text-align:center">
+                    <div class="score-ring score-mid" data-score="55"><span>55</span></div>
+                    <div style="font-size:12px;color:var(--text2);margin-top:8px">🎨 Design</div>
+                </div>
+                <div class="reveal-scale" style="text-align:center">
+                    <div class="score-ring score-mid" data-score="70"><span>70</span></div>
+                    <div style="font-size:12px;color:var(--text2);margin-top:8px">🔒 Security</div>
+                </div>
+            </div>
+            <div class="reveal mt3" style="text-align:center">
+                <div class="counter gradient-text" data-target="42" style="font-size:72px">0</div>
+                <div class="counter-label">Score Geral /100</div>
+            </div>
+            <div class="card mt3 reveal"
+                style="border-color:rgba(34,197,94,.2);max-width:600px;margin-left:auto;margin-right:auto">
+                <p style="font-size:14px">💡 <strong style="color:var(--green)">Por que a auditoria muda tudo:</strong>
+                </p>
+                <p class="text2 mt1" style="font-size:13px">O lead recebe algo <strong
+                        style="color:var(--text)">valioso</strong> (diagnóstico grátis). O designer tem <strong
+                        style="color:var(--text)">dados</strong> para justificar preço. O pitch vira <strong
+                        style="color:var(--text)">mini-consultoria</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 6: UPWORK HUNTER ====== -->
+    <section class="section" id="upwork">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">Upwork Hunter</div>
+                <h2 class="reveal">Jobs certos. <span class="gradient-text">Propostas inteligentes.</span></h2>
+            </div>
+            <div style="display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap" class="mt3">
+                <div class="card reveal-left"
+                    style="flex:1;min-width:180px;max-width:200px;text-align:center;padding:20px">
+                    <span style="font-size:28px">⚙️</span>
+                    <h4 style="font-size:14px;margin-top:8px">Perfil</h4>
+                    <p style="font-size:11px">Skills, budget, idiomas</p>
+                </div>
+                <div style="color:var(--accent);font-size:24px" class="reveal">→</div>
+                <div class="card reveal" style="flex:1;min-width:180px;max-width:200px;text-align:center;padding:20px">
+                    <span style="font-size:28px">🔍</span>
+                    <h4 style="font-size:14px;margin-top:8px">Buscar</h4>
+                    <p style="font-size:11px">Upwork API + filtros</p>
+                </div>
+                <div style="color:var(--accent);font-size:24px" class="reveal">→</div>
+                <div class="card reveal" style="flex:1;min-width:180px;max-width:200px;text-align:center;padding:20px">
+                    <span style="font-size:28px">📋</span>
+                    <h4 style="font-size:14px;margin-top:8px">Filtrados</h4>
+                    <p style="font-size:11px">Budget ✓ Skills ✓</p>
+                </div>
+                <div style="color:var(--accent);font-size:24px" class="reveal">→</div>
+                <div class="card reveal" style="flex:1;min-width:180px;max-width:200px;text-align:center;padding:20px">
+                    <span style="font-size:28px">🤖</span>
+                    <h4 style="font-size:14px;margin-top:8px">Proposta IA</h4>
+                    <p style="font-size:11px">Personalizada p/ job</p>
+                </div>
+                <div style="color:var(--accent);font-size:24px" class="reveal">→</div>
+                <div class="card reveal-right"
+                    style="flex:1;min-width:180px;max-width:200px;text-align:center;padding:20px;border-color:rgba(34,197,94,.3)">
+                    <span style="font-size:28px">📝</span>
+                    <h4 style="font-size:14px;margin-top:8px">Enviar</h4>
+                    <p style="font-size:11px">Revisar & aplicar</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 7: PIPELINE CRM ====== -->
+    <section class="section" id="pipeline">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">Pipeline CRM</div>
+                <h2 class="reveal">Cada lead. <span class="gradient-text">Rastreado.</span></h2>
+            </div>
+            <div class="pipeline mt3 reveal">
+                <div class="pipeline-stage" data-stage="0">
+                    <div style="font-size:24px">🆕</div>
+                    <div class="pipeline-count" data-target="247">0</div>
+                    <div class="pipeline-label">Novo</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage" data-stage="1">
+                    <div style="font-size:24px">📤</div>
+                    <div class="pipeline-count" data-target="183">0</div>
+                    <div class="pipeline-label">Contactado</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage active" data-stage="2">
+                    <div style="font-size:24px">👀</div>
+                    <div class="pipeline-count" data-target="94">0</div>
+                    <div class="pipeline-label">Visualizou</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage" data-stage="3">
+                    <div style="font-size:24px">💬</div>
+                    <div class="pipeline-count" data-target="37">0</div>
+                    <div class="pipeline-label">Respondeu</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-stage" data-stage="4">
+                    <div style="font-size:24px">🤝</div>
+                    <div class="pipeline-count" data-target="12">0</div>
+                    <div class="pipeline-label">Fechou</div>
+                </div>
+            </div>
+            <div class="flex gap3 center mt4 reveal" style="flex-wrap:wrap">
+                <div style="text-align:center">
+                    <div class="counter gradient-text" data-target="74" style="font-size:36px">0</div>
+                    <div class="counter-label">% Open Rate</div>
+                </div>
+                <div style="text-align:center">
+                    <div class="counter" data-target="15" style="font-size:36px;color:var(--green)">0</div>
+                    <div class="counter-label">% Response Rate</div>
+                </div>
+                <div style="text-align:center">
+                    <div class="counter" data-target="4.8" style="font-size:36px;color:var(--yellow)">0</div>
+                    <div class="counter-label">% Close Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 8: ANTES VS DEPOIS ====== -->
+    <section class="section" id="antes-depois">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">Transformação</div>
+                <h2 class="reveal">Antes vs. <span class="gradient-text">Depois</span></h2>
+            </div>
+            <table class="reveal mt3" style="width:100%;border-collapse:collapse;font-size:14px">
+                <thead>
+                    <tr>
+                        <th
+                            style="text-align:left;padding:12px 16px;border-bottom:2px solid var(--border);color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:1px">
+                            Aspecto</th>
+                        <th
+                            style="text-align:left;padding:12px 16px;border-bottom:2px solid var(--border);color:var(--red);font-size:12px;text-transform:uppercase;letter-spacing:1px">
+                            Antes</th>
+                        <th
+                            style="text-align:left;padding:12px 16px;border-bottom:2px solid var(--border);color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:1px">
+                            Depois</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text)">
+                            <strong>Público</strong></td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Só web
+                            designers</td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--green)">Web,
+                            Brand, Motion, UI/UX, Social</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text)">
+                            <strong>Proposta</strong></td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)">"Fiz um
+                            site pra você"</td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--green)">"Seu site
+                            tem problemas — provo com dados"</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text)">
+                            <strong>Leads</strong></td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Só Google
+                            Maps</td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--green)">Maps +
+                            LinkedIn + Upwork + Instagram</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text)">
+                            <strong>Contato</strong></td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)">
+                            info@empresa.com</td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--green)">Email
+                            direto do decisor</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text)">
+                            <strong>Follow-up</strong></td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Zero</td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--green)">5-7
+                            touches automáticos</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text)">
+                            <strong>CRM</strong></td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Não
+                            existe</td>
+                        <td style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--green)">Pipeline
+                            kanban com status</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 9: PRICING ====== -->
+    <section class="section" id="pricing">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">Planos</div>
+                <h2 class="reveal">Escolha seu <span class="gradient-text">arsenal</span></h2>
+            </div>
+            <div class="grid4 mt3">
+                <div class="price-card reveal-scale">
+                    <div class="price-name">Free</div>
+                    <div class="price-amount gradient-text">$0</div>
+                    <ul class="price-features">
+                        <li>5 auditorias/mês</li>
+                        <li>10 leads</li>
+                        <li>1 canal de outreach</li>
+                        <li>Sem Upwork</li>
+                    </ul>
+                </div>
+                <div class="price-card reveal-scale">
+                    <div class="price-name">Solo</div>
+                    <div class="price-amount gradient-text">$29<span>/mês</span></div>
+                    <ul class="price-features">
+                        <li>50 auditorias/mês</li>
+                        <li>100 leads</li>
+                        <li>Upwork Hunter</li>
+                        <li>Email sequences</li>
+                    </ul>
+                </div>
+                <div class="price-card featured reveal-scale">
+                    <div class="price-tag">Popular</div>
+                    <div class="price-name">Pro</div>
+                    <div class="price-amount gradient-text">$59<span>/mês</span></div>
+                    <ul class="price-features">
+                        <li>Auditorias ilimitadas</li>
+                        <li>Multi-canal</li>
+                        <li>CRM Pipeline</li>
+                        <li>Todas as auditorias</li>
+                    </ul>
+                </div>
+                <div class="price-card reveal-scale">
+                    <div class="price-name">Agency</div>
+                    <div class="price-amount gradient-text">$99<span>/mês</span></div>
+                    <ul class="price-features">
+                        <li>White-label</li>
+                        <li>Multi-user</li>
+                        <li>API access</li>
+                        <li>Priority support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 10: ROADMAP ====== -->
+    <section class="section" id="roadmap">
+        <div class="section-inner">
+            <div style="text-align:center" class="mb3">
+                <div class="label reveal mb2">Roadmap</div>
+                <h2 class="reveal">A rota de <span class="gradient-text">expansão</span></h2>
+            </div>
+            <div class="roadmap mt4 reveal">
+                <div class="roadmap-phase">
+                    <div class="roadmap-dot done"></div>
+                    <h4 style="font-size:14px;color:var(--green)">P0 — MVP</h4>
+                    <p class="text2" style="font-size:12px;margin-top:8px">Auth, Scraping, Templates, Geração IA,
+                        Preview, URL pública</p>
+                </div>
+                <div class="roadmap-phase">
+                    <div class="roadmap-dot active"></div>
+                    <h4 style="font-size:14px;color:var(--accent)">P1 — Intel</h4>
+                    <p class="text2" style="font-size:12px;margin-top:8px">Prospector, Intel Engine, Audit Engine,
+                        Proposal Builder</p>
+                </div>
+                <div class="roadmap-phase">
+                    <div class="roadmap-dot"></div>
+                    <h4 style="font-size:14px">P2 — Outreach</h4>
+                    <p class="text2" style="font-size:12px;margin-top:8px">Email Sequences, CRM Pipeline, Upwork Hunter
+                    </p>
+                </div>
+                <div class="roadmap-phase">
+                    <div class="roadmap-dot"></div>
+                    <h4 style="font-size:14px">P3 — Scale</h4>
+                    <p class="text2" style="font-size:12px;margin-top:8px">Multi-disciplina, LinkedIn/WhatsApp,
+                        White-label, Analytics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ====== SECTION 11: CTA ====== -->
+    <section class="section" id="cta" style="text-align:center">
+        <div class="section-inner">
+            <div class="label reveal mb2">Pronto?</div>
+            <h1 class="gradient-text reveal">Comece a caçar.</h1>
+            <p class="text2 mt2 reveal" style="font-size:18px;max-width:500px;margin:16px auto 0">O mercado está cheio
+                de oportunidades invisíveis.<br>O BirdBox mostra onde elas estão.</p>
+            <div class="mt3 reveal-scale">
+                <a href="#" class="cta-btn">🐦 Acessar o BirdBox</a>
+            </div>
+            <p class="text2 mt3 reveal" style="font-size:13px;opacity:.5">BirdBox © 2026 — Inteligência Comercial para
+                Criativos</p>
+        </div>
+    </section>
+
+    <script>
+        // ========================
+        // PARTICLE BACKGROUND
+        // ========================
+        const canvas = document.getElementById('radar-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let w, h;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.3 + 0.1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(99,102,241,${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(99,102,241,${0.06 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, w, h);
+            particles.forEach(p => { p.update(); p.draw(); });
+            drawConnections();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // ========================
+        // GSAP SCROLL ANIMATIONS
+        // ========================
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Reveal animations
+        document.querySelectorAll('.reveal').forEach(el => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+            });
+        });
+        document.querySelectorAll('.reveal-left').forEach(el => {
+            gsap.to(el, {
+                opacity: 1, x: 0, duration: 0.8, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+            });
+        });
+        document.querySelectorAll('.reveal-right').forEach(el => {
+            gsap.to(el, {
+                opacity: 1, x: 0, duration: 0.8, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+            });
+        });
+        document.querySelectorAll('.reveal-scale').forEach(el => {
+            gsap.to(el, {
+                opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+            });
+        });
+
+        // Counter animations
+        document.querySelectorAll('.counter').forEach(el => {
+            const target = parseFloat(el.dataset.target);
+            const isFloat = target % 1 !== 0;
+            ScrollTrigger.create({
+                trigger: el, start: 'top 85%',
+                onEnter: () => {
+                    gsap.to({ val: 0 }, {
+                        val: target, duration: 2, ease: 'power1.out',
+                        onUpdate: function () { el.textContent = isFloat ? this.targets()[0].val.toFixed(1) : Math.round(this.targets()[0].val); }
+                    });
+                }, once: true
+            });
+        });
+
+        // Pipeline counters
+        document.querySelectorAll('.pipeline-count').forEach(el => {
+            const target = parseInt(el.dataset.target);
+            ScrollTrigger.create({
+                trigger: el, start: 'top 85%',
+                onEnter: () => {
+                    gsap.to({ val: 0 }, {
+                        val: target, duration: 1.5, ease: 'power1.out',
+                        onUpdate: function () { el.textContent = Math.round(this.targets()[0].val); }
+                    });
+                }, once: true
+            });
+        });
+
+        // Progress bars
+        document.querySelectorAll('.progress-fill').forEach(bar => {
+            ScrollTrigger.create({
+                trigger: bar, start: 'top 90%',
+                onEnter: () => { bar.style.width = bar.dataset.width + '%'; },
+                once: true
+            });
+        });
+
+        // Pipeline stage highlight
+        const stages = document.querySelectorAll('.pipeline-stage');
+        stages.forEach((stage, i) => {
+            ScrollTrigger.create({
+                trigger: '#pipeline', start: 'top 60%',
+                onEnter: () => {
+                    gsap.to(stage, {
+                        delay: i * 0.3, duration: 0.5,
+                        onStart: () => { stage.classList.add('active'); },
+                        onComplete: () => { if (i < stages.length - 1) setTimeout(() => stage.classList.remove('active'), 800); }
+                    });
+                }, once: true
+            });
+        });
+
+        // Hero radar opacity based on scroll
+        gsap.to('#hero .hero-radar', {
+            opacity: 0, scale: 0.5,
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+        });
+
+        // Canvas opacity based on scroll
+        gsap.to('#radar-canvas', {
+            opacity: 0.1,
+            scrollTrigger: { trigger: '#modulos', start: 'top center', end: 'bottom center', scrub: true }
+        });
+    </script>
+</body>
+
+</html>

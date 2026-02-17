@@ -1,0 +1,21 @@
+[1mGlobal Skills[0m
+
+[36mdesign-md[0m [38;5;102m~\.agents\skills\design-md[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+[36menhance-prompt[0m [38;5;102m~\.agents\skills\enhance-prompt[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+[36mfind-skills[0m [38;5;102m~\.agents\skills\find-skills[0m
+  [38;5;102mAgents:[0m Claude Code, OpenClaw, Cline, CodeBuddy, Codex +29 more
+[36mfirecrawl[0m [38;5;102m~\.agents\skills\firecrawl[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+[36mreact:components[0m [38;5;102m~\.agents\skills\react-components[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+[36mremotion[0m [38;5;102m~\.agents\skills\remotion[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+[36mremotion-best-practices[0m [38;5;102m~\.agents\skills\remotion-best-practices[0m
+  [38;5;102mAgents:[0m Claude Code, Cursor, Gemini CLI
+[36mshadcn-ui[0m [38;5;102m~\.agents\skills\shadcn-ui[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+[36mstitch-loop[0m [38;5;102m~\.agents\skills\stitch-loop[0m
+  [38;5;102mAgents:[0m Antigravity, Augment, Claude Code, OpenClaw, Cline +27 more
+
