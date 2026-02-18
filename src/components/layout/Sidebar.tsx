@@ -2,8 +2,9 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   LayoutDashboard,
-  FileText,
   Search,
+  Users,
+  ClipboardCheck,
   BarChart3,
   Settings,
   ChevronLeft,
@@ -17,8 +18,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', enabled: true },
-  { icon: FileText, label: 'Pitches', href: '/dashboard/pitches', enabled: true },
-  { icon: Search, label: 'Find Leads', href: '/dashboard/leads', enabled: true },
+  { icon: Search, label: 'Prospector', href: '/dashboard/leads', enabled: true },
+  { icon: Users, label: 'Prospects', href: '/dashboard/prospects', enabled: true },
+  { icon: ClipboardCheck, label: 'Audits', href: '/dashboard/audits', enabled: true },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics', enabled: false },
   { icon: Settings, label: 'Settings', href: '/dashboard/settings', enabled: true },
 ]
@@ -51,7 +53,7 @@ export function Sidebar() {
             animate={{ opacity: 1 }}
             className="text-lg font-bold text-text-primary"
           >
-            Pitch AI
+            BirdBox
           </motion.span>
         )}
       </div>

@@ -117,3 +117,38 @@ export interface PitchWithRelations extends Pitch {
   views?: PitchView[]
   feedback?: PitchFeedback[]
 }
+
+export interface AuditIssue {
+  category: 'performance' | 'seo' | 'mobile' | 'accessibility' | 'best-practices'
+  severity: 'critical' | 'warning' | 'info'
+  title: string
+  description: string
+}
+
+export interface AuditRecommendation {
+  title: string
+  description: string
+  impact: 'high' | 'medium' | 'low'
+}
+
+export interface Audit {
+  id: string
+  user_id: string
+  pitch_id: string | null
+  business_name: string
+  website_url: string
+  overall_score: number | null
+  performance_score: number | null
+  seo_score: number | null
+  mobile_score: number | null
+  accessibility_score: number | null
+  best_practices_score: number | null
+  audit_data: Record<string, unknown> | null
+  summary: string | null
+  issues: AuditIssue[]
+  recommendations: AuditRecommendation[]
+  status: 'pending' | 'running' | 'completed' | 'failed'
+  error_message: string | null
+  created_at: string
+  completed_at: string | null
+}

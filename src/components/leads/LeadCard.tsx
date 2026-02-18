@@ -1,4 +1,4 @@
-import { Star, MapPin, Phone, Mail, Globe, Zap } from 'lucide-react'
+import { Star, MapPin, Phone, Mail, Globe, ClipboardCheck, UserPlus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -19,6 +19,7 @@ interface LeadData {
 interface LeadCardProps {
   lead: LeadData
   onCreatePitch: (lead: LeadData) => void
+  onRunAudit?: (lead: LeadData) => void
   index?: number
 }
 
@@ -40,7 +41,7 @@ function StarRating({ rating }: { rating: number }) {
   )
 }
 
-export function LeadCard({ lead, onCreatePitch, index = 0 }: LeadCardProps) {
+export function LeadCard({ lead, onCreatePitch, onRunAudit, index = 0 }: LeadCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -99,15 +100,29 @@ export function LeadCard({ lead, onCreatePitch, index = 0 }: LeadCardProps) {
             )}
           </div>
 
-          <Button
-            onClick={() => onCreatePitch(lead)}
-            disabled={!lead.website_url}
-            className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40"
-            size="sm"
-          >
-            <Zap className="mr-2 h-4 w-4" />
-            {lead.website_url ? 'Create Pitch' : 'No website available'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => onCreatePitch(lead)}
+              disabled={!lead.website_url}
+              variant="outline"
+              className="flex-1 border-border disabled:opacity-40"
+              size="sm"
+            >
+              <UserPlus className="mr-1.5 h-3.5 w-3.5" />
+              Save Lead
+            </Button>
+            {onRunAudit && (
+              <Button
+                onClick={() => onRunAudit(lead)}
+                disabled={!lead.website_url}
+                className="flex-1 bg-accent hover:bg-accent-hover disabled:opacity-40"
+                size="sm"
+              >
+                <ClipboardCheck className="mr-1.5 h-3.5 w-3.5" />
+                Audit
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </motion.div>

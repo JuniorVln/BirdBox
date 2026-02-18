@@ -43,10 +43,9 @@ export function LeadsPage() {
     })
   }, [results, filters])
 
-  const handleCreatePitch = useCallback(
+  const handleSaveLead = useCallback(
     async (leadData: LeadData) => {
       try {
-        // Save lead to DB first
         const lead = await createLead.mutateAsync({
           business_name: leadData.business_name,
           address: leadData.address ?? undefined,
@@ -58,10 +57,7 @@ export function LeadsPage() {
           category: leadData.category ?? undefined,
         })
 
-        // Navigate to new pitch with lead data
-        navigate('/dashboard/pitches/new', {
-          state: { lead },
-        })
+        navigate('/dashboard/prospects/' + lead.id)
       } catch {
         // Error handled by React Query
       }
@@ -69,12 +65,23 @@ export function LeadsPage() {
     [createLead, navigate]
   )
 
+  const handleRunAudit = useCallback(
+    (leadData: LeadData) => {
+      if (!leadData.website_url) return
+      navigate(
+        '/dashboard/audits?name=' + encodeURIComponent(leadData.business_name) +
+        '&url=' + encodeURIComponent(leadData.website_url)
+      )
+    },
+    [navigate]
+  )
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-1">Find Leads</h2>
+        <h2 className="text-2xl font-bold text-text-primary mb-1">Prospector</h2>
         <p className="text-text-secondary">
-          Search for local businesses on Google Maps and create personalized pitches.
+          Search for local businesses on Google Maps, save leads, and run website audits.
         </p>
       </div>
 
@@ -113,7 +120,8 @@ export function LeadsPage() {
             <LeadCard
               key={`${lead.business_name}-${i}`}
               lead={lead}
-              onCreatePitch={handleCreatePitch}
+              onCreatePitch={handleSaveLead}
+              onRunAudit={handleRunAudit}
               index={i}
             />
           ))}

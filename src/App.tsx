@@ -9,9 +9,10 @@ import { LandingPage } from '@/pages/LandingPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { DashboardPage } from '@/pages/DashboardPage'
-import { PitchesPage } from '@/pages/PitchesPage'
-import { NewPitchPage } from '@/pages/NewPitchPage'
-import { PitchDetailPage } from '@/pages/PitchDetailPage'
+import { ProspectsPage } from '@/pages/ProspectsPage'
+import { ProspectDetailPage } from '@/pages/ProspectDetailPage'
+import { AuditsPage } from '@/pages/AuditsPage'
+import { AuditDetailPage } from '@/pages/AuditDetailPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { PublicPitchPage } from '@/pages/PublicPitchPage'
 import { LeadsPage } from '@/pages/LeadsPage'
@@ -39,12 +40,16 @@ export function App() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path="pitches" element={<PitchesPage />} />
-          <Route path="pitches/new" element={<NewPitchPage />} />
-          <Route path="pitches/:id" element={<PitchDetailPage />} />
           <Route path="leads" element={<LeadsPage />} />
+          <Route path="prospects" element={<ProspectsPage />} />
+          <Route path="prospects/:id" element={<ProspectDetailPage />} />
+          <Route path="audits" element={<AuditsPage />} />
+          <Route path="audits/:id" element={<AuditDetailPage />} />
           <Route path="analytics" element={<ComingSoon title="Analytics" />} />
           <Route path="settings" element={<SettingsPage />} />
+          {/* Legacy redirects */}
+          <Route path="pitches" element={<Navigate to="/dashboard/prospects" replace />} />
+          <Route path="pitches/new" element={<Navigate to="/dashboard/leads" replace />} />
         </Route>
 
         {/* Catch-all */}

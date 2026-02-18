@@ -4,9 +4,9 @@ import { Header } from './Header'
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
-  '/dashboard/pitches': 'Pitches',
-  '/dashboard/pitches/new': 'New Pitch',
-  '/dashboard/leads': 'Find Leads',
+  '/dashboard/leads': 'Prospector',
+  '/dashboard/prospects': 'Prospects',
+  '/dashboard/audits': 'Audits',
   '/dashboard/analytics': 'Analytics',
   '/dashboard/settings': 'Settings',
 }
@@ -15,9 +15,11 @@ export function DashboardLayout() {
   const location = useLocation()
 
   const getTitle = () => {
-    // Check for pitch detail route
-    if (location.pathname.match(/^\/dashboard\/pitches\/[^/]+$/) && location.pathname !== '/dashboard/pitches/new') {
-      return 'Pitch Detail'
+    if (location.pathname.match(/^\/dashboard\/prospects\/[^/]+$/)) {
+      return 'Prospect Detail'
+    }
+    if (location.pathname.match(/^\/dashboard\/audits\/[^/]+$/)) {
+      return 'Audit Report'
     }
     return pageTitles[location.pathname] ?? 'Dashboard'
   }
