@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
+import { useI18n } from '@/hooks/useI18n'
 
 interface LeadData {
   business_name: string
@@ -29,11 +30,10 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`h-3.5 w-3.5 ${
-            star <= Math.round(rating)
+          className={`h-3.5 w-3.5 ${star <= Math.round(rating)
               ? 'fill-yellow-400 text-yellow-400'
               : 'text-zinc-600'
-          }`}
+            }`}
         />
       ))}
       <span className="text-sm text-text-secondary ml-1">{rating.toFixed(1)}</span>
@@ -42,6 +42,8 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export function LeadCard({ lead, onCreatePitch, onRunAudit, index = 0 }: LeadCardProps) {
+  const { t } = useI18n()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -65,7 +67,7 @@ export function LeadCard({ lead, onCreatePitch, onRunAudit, index = 0 }: LeadCar
             <div className="flex items-center gap-2 mb-3">
               <StarRating rating={lead.rating} />
               {lead.review_count !== null && (
-                <span className="text-xs text-text-muted">({lead.review_count} reviews)</span>
+                <span className="text-xs text-text-muted">({lead.review_count} {t.prospectDetail.reviews})</span>
               )}
             </div>
           )}
@@ -109,7 +111,7 @@ export function LeadCard({ lead, onCreatePitch, onRunAudit, index = 0 }: LeadCar
               size="sm"
             >
               <UserPlus className="mr-1.5 h-3.5 w-3.5" />
-              Save Lead
+              {t.leads.saveLeadButton}
             </Button>
             {onRunAudit && (
               <Button
@@ -119,7 +121,7 @@ export function LeadCard({ lead, onCreatePitch, onRunAudit, index = 0 }: LeadCar
                 size="sm"
               >
                 <ClipboardCheck className="mr-1.5 h-3.5 w-3.5" />
-                Audit
+                {t.leads.runAuditButton}
               </Button>
             )}
           </div>

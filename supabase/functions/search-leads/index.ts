@@ -6,16 +6,23 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-interface SerpApiPlace {
+interface ApifyPlace {
   title?: string
   address?: string
+  phoneUnformatted?: string
   phone?: string
   website?: string
-  rating?: number
-  reviews?: number
-  type?: string
-  thumbnail?: string
-  gps_coordinates?: { latitude: number; longitude: number }
+  totalScore?: number
+  reviewsCount?: number
+  categoryName?: string
+  emails?: string[]
+  socialNetworkUrls?: {
+    linkedin?: string
+    twitter?: string
+    instagram?: string
+    facebook?: string
+  }
+  location?: { lat: number; lng: number }
   [key: string]: unknown
 }
 
@@ -25,7 +32,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query, businessType, location, limit = 20 } = await req.json()
+    const { query, businessType, location, limit = 10 } = await req.json()
 
     if (!query && (!businessType || !location)) {
       return new Response(
@@ -34,51 +41,61 @@ serve(async (req) => {
       )
     }
 
-    const apiKey = Deno.env.get('SERPAPI_API_KEY')
+    const apiKey = Deno.env.get('APIFY_API_KEY')
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ success: false, error: 'SERPAPI_API_KEY not configured' }),
+        JSON.stringify({ success: false, error: 'APIFY_API_KEY not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     const searchQuery = query || `${businessType} in ${location}`
-    const params = new URLSearchParams({
-      engine: 'google_maps',
-      q: searchQuery,
-      type: 'search',
-      api_key: apiKey,
-    })
+    
+    // Apify run-sync-get-dataset-items endpoint for compass/google-maps-extractor
+    const apifyUrl = `https://api.apify.com/v2/acts/compass~google-maps-extractor/run-sync-get-dataset-items?token=${apiKey}`
+    
+    const apifyPayload = {
+      searchStringsArray: [searchQuery],
+      maxCrawledPlacesPerSearch: limit,
+      extractEmailsAndContacts: true,
+      maxImages: 1,
+      maxReviews: 0,
+      language: "en"
+    }
 
-    const response = await fetch(
-      `https://serpapi.com/search.json?${params}`
-    )
+    console.log('Calling Apify with payload:', apifyPayload)
+
+    const response = await fetch(apifyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(apifyPayload),
+    })
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('SerpAPI error:', response.status, errorText)
+      console.error('Apify error:', response.status, errorText)
       return new Response(
-        JSON.stringify({ success: false, error: 'SerpAPI error: ' + response.status }),
+        JSON.stringify({ success: false, error: 'Apify error: ' + response.status }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     const result = await response.json()
-
-    const places: SerpApiPlace[] = result.local_results || []
+    const places: ApifyPlace[] = Array.isArray(result) ? result : []
 
     const leads = places
-      .filter((p: SerpApiPlace) => p.title)
-      .slice(0, limit)
-      .map((p: SerpApiPlace) => ({
+      .filter((p: ApifyPlace) => p.title)
+      .map((p: ApifyPlace) => ({
         business_name: p.title || 'Unknown',
         address: p.address || null,
-        phone: p.phone || null,
+        phone: p.phoneUnformatted || p.phone || null,
         website_url: p.website || null,
-        email: null,
-        rating: p.rating || null,
-        review_count: p.reviews || null,
-        category: p.type || null,
+        email: p.emails && p.emails.length > 0 ? p.emails[0] : null,
+        rating: p.totalScore || null,
+        review_count: p.reviewsCount || null,
+        category: p.categoryName || null,
         google_maps_data: p,
       }))
 

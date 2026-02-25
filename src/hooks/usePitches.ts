@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
-import type { Pitch, PitchView, PitchFeedback, ScrapedData, PitchColors } from '@/types'
+import type { Pitch, ScrapedData, PitchColors, PitchWithRelations } from '@/types'
 
 export function usePitches() {
   const user = useAuthStore((s) => s.user)
@@ -18,7 +18,7 @@ export function usePitches() {
       if (error) throw error
       return data as unknown as Pitch[]
     },
-    enabled: !!user,
+    enabled: !!user, // Enable if mock user exists
   })
 }
 
@@ -41,12 +41,14 @@ export function usePitch(id: string) {
       ])
 
       if (pitchRes.error) throw pitchRes.error
+      if (viewsRes.error) throw viewsRes.error
+      if (feedbackRes.error) throw feedbackRes.error
 
       return {
         ...(pitchRes.data as unknown as Pitch),
-        views: (viewsRes.data ?? []) as unknown as PitchView[],
-        feedback: (feedbackRes.data ?? []) as unknown as PitchFeedback[],
-      }
+        views: viewsRes.data ?? [],
+        feedback: feedbackRes.data ?? [],
+      } as PitchWithRelations
     },
     enabled: !!id,
   })
@@ -74,13 +76,13 @@ export function useCreatePitch() {
           user_id: user!.id,
           business_name: input.business_name,
           website_url: input.website_url,
-          scraped_data: input.scraped_data as unknown as Record<string, unknown>,
+          scraped_data: input.scraped_data,
           template_id: input.template_id,
           generated_html: input.generated_html,
-          colors: input.colors as unknown as Record<string, unknown>,
+          colors: input.colors,
           status: 'draft',
           ...(input.lead_id ? { lead_id: input.lead_id } : {}),
-        })
+        } as any)
         .select()
         .single()
 
@@ -98,9 +100,10 @@ export function useUpdatePitch() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: { id: string } & Partial<Pitch>) => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('pitches')
-        .update(updates as Record<string, unknown>)
+        .update(updates)
         .eq('id', id)
         .select()
         .single()
@@ -120,7 +123,8 @@ export function useMarkPitchSent() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('pitches')
         .update({ status: 'sent', email_sent_at: new Date().toISOString() })
         .eq('id', id)

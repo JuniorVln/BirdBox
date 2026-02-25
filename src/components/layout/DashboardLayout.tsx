@@ -1,27 +1,30 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
-
-const pageTitles: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/dashboard/leads': 'Prospector',
-  '/dashboard/prospects': 'Prospects',
-  '/dashboard/audits': 'Audits',
-  '/dashboard/analytics': 'Analytics',
-  '/dashboard/settings': 'Settings',
-}
+import { useI18n } from '@/hooks/useI18n'
 
 export function DashboardLayout() {
   const location = useLocation()
+  const { t } = useI18n()
 
   const getTitle = () => {
     if (location.pathname.match(/^\/dashboard\/prospects\/[^/]+$/)) {
-      return 'Prospect Detail'
+      return t.header.prospectDetail
     }
     if (location.pathname.match(/^\/dashboard\/audits\/[^/]+$/)) {
-      return 'Audit Report'
+      return t.header.auditReport
     }
-    return pageTitles[location.pathname] ?? 'Dashboard'
+
+    const pageTitles: Record<string, string> = {
+      '/dashboard': t.nav.dashboard,
+      '/dashboard/leads': t.nav.prospector,
+      '/dashboard/prospects': t.nav.prospects,
+      '/dashboard/audits': t.nav.audits,
+      '/dashboard/analytics': t.nav.analytics,
+      '/dashboard/settings': t.nav.settings,
+    }
+
+    return pageTitles[location.pathname] ?? t.nav.dashboard
   }
 
   return (

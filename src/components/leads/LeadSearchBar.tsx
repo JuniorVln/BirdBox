@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Search, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/hooks/useI18n'
 
 interface LeadSearchBarProps {
   onSearch: (businessType: string, location: string) => void
@@ -11,6 +12,7 @@ interface LeadSearchBarProps {
 export function LeadSearchBar({ onSearch, isLoading }: LeadSearchBarProps) {
   const [businessType, setBusinessType] = useState('')
   const [location, setLocation] = useState('')
+  const { t } = useI18n()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,13 +24,13 @@ export function LeadSearchBar({ onSearch, isLoading }: LeadSearchBarProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
       <Input
-        placeholder="e.g., coffee shop, dentist, gym..."
+        placeholder={t.leads.businessTypePlaceholder}
         value={businessType}
         onChange={(e) => setBusinessType(e.target.value)}
         className="flex-1 bg-surface border-border text-text-primary placeholder:text-text-muted"
       />
       <Input
-        placeholder="e.g., Austin, TX"
+        placeholder={t.leads.locationPlaceholder}
         value={location}
         onChange={(e) => setLocation(e.target.value)}
         className="flex-1 bg-surface border-border text-text-primary placeholder:text-text-muted"
@@ -41,12 +43,12 @@ export function LeadSearchBar({ onSearch, isLoading }: LeadSearchBarProps) {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Searching...
+            <span className="truncate">{t.leads.searching}</span>
           </>
         ) : (
           <>
             <Search className="mr-2 h-4 w-4" />
-            Search Leads
+            {t.leads.searchButton}
           </>
         )}
       </Button>

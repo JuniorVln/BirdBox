@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { useSearchLeads } from '@/hooks/useSearchLeads'
 import { useCreateLead } from '@/hooks/useLeads'
+import { useI18n } from '@/hooks/useI18n'
 import { LeadSearchBar } from '@/components/leads/LeadSearchBar'
 import { LeadCard } from '@/components/leads/LeadCard'
 import type { LeadData } from '@/components/leads/LeadCard'
@@ -16,17 +17,19 @@ export function LeadsPage() {
   const navigate = useNavigate()
   const { search, results, isLoading, error, total } = useSearchLeads()
   const createLead = useCreateLead()
+  const { t } = useI18n()
   const [hasSearched, setHasSearched] = useState(false)
   const [filters, setFilters] = useState<LeadFilterValues>({
     minRating: 0,
     hasWebsite: false,
     hasEmail: false,
+    hasPhone: false,
   })
 
   const handleSearch = useCallback(
     (businessType: string, location: string) => {
       setHasSearched(true)
-      setFilters({ minRating: 0, hasWebsite: false, hasEmail: false })
+      setFilters({ minRating: 0, hasWebsite: false, hasEmail: false, hasPhone: false })
       search(businessType, location)
     },
     [search]
@@ -39,6 +42,7 @@ export function LeadsPage() {
       }
       if (filters.hasWebsite && !lead.website_url) return false
       if (filters.hasEmail && !lead.email) return false
+      if (filters.hasPhone && !lead.phone) return false
       return true
     })
   }, [results, filters])
@@ -79,10 +83,8 @@ export function LeadsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-1">Prospector</h2>
-        <p className="text-text-secondary">
-          Search for local businesses on Google Maps, save leads, and run website audits.
-        </p>
+        <h2 className="text-2xl font-bold text-text-primary mb-1">{t.leads.title}</h2>
+        <p className="text-text-secondary">{t.leads.description}</p>
       </div>
 
       <LeadSearchBar onSearch={handleSearch} isLoading={isLoading} />
@@ -100,7 +102,7 @@ export function LeadsPage() {
 
       {error && !isLoading && (
         <ErrorState
-          title="Search failed"
+          title={t.leads.searchFailed}
           message={error}
           onRetry={() => setHasSearched(false)}
         />
@@ -109,8 +111,8 @@ export function LeadsPage() {
       {!isLoading && !error && hasSearched && results.length === 0 && (
         <EmptyState
           icon={Search}
-          title="No leads found"
-          description="Try a different business type or location."
+          title={t.leads.noResults}
+          description={t.leads.noResultsDescription}
         />
       )}
 
@@ -131,8 +133,8 @@ export function LeadsPage() {
       {!isLoading && !error && hasSearched && results.length > 0 && filteredResults.length === 0 && (
         <EmptyState
           icon={Search}
-          title="No results match filters"
-          description="Try adjusting your filters to see more results."
+          title={t.leads.filterNoMatch}
+          description={t.leads.filterNoMatchDescription}
         />
       )}
     </div>

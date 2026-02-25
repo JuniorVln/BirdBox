@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ClipboardCheck, Globe, Loader2, AlertCircle } from 'lucide-react'
 import { useAudits, useRunAudit } from '@/hooks/useAudits'
+import { useI18n } from '@/hooks/useI18n'
 import { ScoreGauge } from '@/components/audit/ScoreGauge'
 import { EmptyState } from '@/components/common/EmptyState'
 import { FullPageLoader } from '@/components/common/LoadingSpinner'
@@ -18,6 +19,7 @@ export function AuditsPage() {
   const { data: audits, isLoading } = useAudits()
   const runAudit = useRunAudit()
   const { toast } = useToast()
+  const { t } = useI18n()
 
   const [url, setUrl] = useState('')
   const [businessName, setBusinessName] = useState('')
@@ -40,7 +42,7 @@ export function AuditsPage() {
     const targetName = name || businessName || targetUrl
 
     if (!targetUrl) {
-      toast({ title: 'URL required', description: 'Enter a website URL to audit.', variant: 'destructive' })
+      toast({ title: t.audits.urlRequired, description: t.audits.urlRequiredDescription, variant: 'destructive' })
       return
     }
 
@@ -53,7 +55,7 @@ export function AuditsPage() {
       navigate('/dashboard/audits/' + audit.id)
     } catch (err) {
       toast({
-        title: 'Audit failed',
+        title: t.audits.auditFailed,
         description: err instanceof Error ? err.message : 'Something went wrong',
         variant: 'destructive',
       })
@@ -70,22 +72,20 @@ export function AuditsPage() {
       className="space-y-6"
     >
       <motion.div variants={staggerItem}>
-        <h2 className="text-2xl font-bold text-text-primary">Audits</h2>
-        <p className="text-text-secondary">
-          Website audits with SEO, speed, mobile, and accessibility scores.
-        </p>
+        <h2 className="text-2xl font-bold text-text-primary">{t.audits.title}</h2>
+        <p className="text-text-secondary">{t.audits.description}</p>
       </motion.div>
 
       {/* Quick audit form */}
       <motion.div variants={staggerItem} className="flex gap-3">
         <Input
-          placeholder="Business name"
+          placeholder={t.audits.businessName}
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           className="max-w-[200px] bg-surface border-border"
         />
         <Input
-          placeholder="https://example.com"
+          placeholder={t.audits.urlPlaceholder}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           className="flex-1 bg-surface border-border"
@@ -100,15 +100,15 @@ export function AuditsPage() {
           ) : (
             <ClipboardCheck className="mr-2 h-4 w-4" />
           )}
-          {runAudit.isPending ? 'Auditing...' : 'Run Audit'}
+          {runAudit.isPending ? t.audits.auditing : t.audits.runAudit}
         </Button>
       </motion.div>
 
       {(!audits || audits.length === 0) ? (
         <EmptyState
           icon={ClipboardCheck}
-          title="No audits yet"
-          description="Enter a URL above or go to a prospect and click 'Run Audit'."
+          title={t.audits.noAuditsYet}
+          description={t.audits.noAuditsYetDescription}
         />
       ) : (
         <motion.div variants={staggerItem} className="grid gap-3">
@@ -138,15 +138,15 @@ export function AuditsPage() {
 
               {audit.status === 'completed' && audit.overall_score !== null && (
                 <div className="flex items-center gap-4">
-                  <ScoreGauge score={audit.overall_score} label="Overall" size="sm" />
+                  <ScoreGauge score={audit.overall_score} label={t.audits.overall} size="sm" />
                 </div>
               )}
 
               {audit.status === 'running' && (
-                <span className="text-xs text-yellow-400 font-medium">Analyzing...</span>
+                <span className="text-xs text-yellow-400 font-medium">{t.audits.analyzing}</span>
               )}
               {audit.status === 'failed' && (
-                <span className="text-xs text-red-400 font-medium">Failed</span>
+                <span className="text-xs text-red-400 font-medium">{t.audits.failed}</span>
               )}
 
               <span className="text-xs text-text-muted">

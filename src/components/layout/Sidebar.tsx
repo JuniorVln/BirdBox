@@ -14,21 +14,23 @@ import {
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/stores/uiStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/hooks/useI18n'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', enabled: true },
-  { icon: Search, label: 'Prospector', href: '/dashboard/leads', enabled: true },
-  { icon: Users, label: 'Prospects', href: '/dashboard/prospects', enabled: true },
-  { icon: ClipboardCheck, label: 'Audits', href: '/dashboard/audits', enabled: true },
-  { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics', enabled: false },
-  { icon: Settings, label: 'Settings', href: '/dashboard/settings', enabled: true },
-]
 
 export function Sidebar() {
   const location = useLocation()
   const { sidebarCollapsed, toggleSidebar } = useUIStore()
   const profile = useAuthStore((s) => s.profile)
+  const { t } = useI18n()
+
+  const navItems = [
+    { icon: LayoutDashboard, label: t.nav.dashboard, href: '/dashboard', enabled: true },
+    { icon: Search, label: t.nav.prospector, href: '/dashboard/leads', enabled: true },
+    { icon: Users, label: t.nav.prospects, href: '/dashboard/prospects', enabled: true },
+    { icon: ClipboardCheck, label: t.nav.audits, href: '/dashboard/audits', enabled: true },
+    { icon: BarChart3, label: t.nav.analytics, href: '/dashboard/analytics', enabled: false },
+    { icon: Settings, label: t.nav.settings, href: '/dashboard/settings', enabled: true },
+  ]
 
   const isActive = (href: string) => {
     if (href === '/dashboard') return location.pathname === '/dashboard'
@@ -77,7 +79,9 @@ export function Sidebar() {
             <item.icon className="h-5 w-5 shrink-0" />
             {!sidebarCollapsed && <span>{item.label}</span>}
             {!sidebarCollapsed && !item.enabled && (
-              <span className="ml-auto text-[10px] uppercase tracking-wider text-text-muted">Soon</span>
+              <span className="ml-auto text-[10px] uppercase tracking-wider text-text-muted">
+                {t.common.soon}
+              </span>
             )}
           </Link>
         ))}

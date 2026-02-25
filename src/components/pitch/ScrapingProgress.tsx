@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
+import { useI18n } from '@/hooks/useI18n'
 
 interface ScrapingProgressProps {
   currentStep: string
@@ -8,6 +9,8 @@ interface ScrapingProgressProps {
 }
 
 export function ScrapingProgress({ currentStep, progress }: ScrapingProgressProps) {
+  const { t } = useI18n()
+
   return (
     <div className="max-w-md mx-auto text-center py-12">
       <motion.div
@@ -18,9 +21,9 @@ export function ScrapingProgress({ currentStep, progress }: ScrapingProgressProp
         <Loader2 className="h-8 w-8 text-accent animate-spin" />
       </motion.div>
 
-      <h2 className="text-xl font-bold text-text-primary mb-2">Analyzing Website</h2>
+      <h2 className="text-xl font-bold text-text-primary mb-2">{t.newPitch.scraping.title}</h2>
       <p className="text-text-secondary text-sm mb-8">
-        We&apos;re extracting content and analyzing the design...
+        {t.newPitch.scraping.description}
       </p>
 
       <Progress value={progress} className="h-2 mb-4 bg-surface-raised" />

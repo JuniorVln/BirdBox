@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { useDeletePitch } from '@/hooks/usePitches'
 import { SendEmailModal } from '@/components/pitch/SendEmailModal'
+import { useI18n } from '@/hooks/useI18n'
 import type { Pitch } from '@/types'
 
 interface PitchActionBarProps {
@@ -16,6 +17,7 @@ export function PitchActionBar({ pitch }: PitchActionBarProps) {
   const deletePitch = useDeletePitch()
   const [copied, setCopied] = useState(false)
   const [emailModalOpen, setEmailModalOpen] = useState(false)
+  const { t } = useI18n()
 
   const publicUrl = `${window.location.origin}/p/${pitch.id}`
 
@@ -30,7 +32,7 @@ export function PitchActionBar({ pitch }: PitchActionBarProps) {
   }
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this pitch?')) {
+    if (window.confirm(t.pitchDetail.actions.deleteConfirm)) {
       await deletePitch.mutateAsync(pitch.id)
       navigate('/dashboard/pitches')
     }
@@ -65,7 +67,7 @@ export function PitchActionBar({ pitch }: PitchActionBarProps) {
               className="bg-accent hover:bg-accent-hover gap-2"
             >
               <Mail className="h-3.5 w-3.5" />
-              Send Email
+              {t.pitchDetail.actions.sendEmail}
             </Button>
           )}
           <Button
@@ -75,7 +77,7 @@ export function PitchActionBar({ pitch }: PitchActionBarProps) {
             className="border-border text-text-secondary hover:text-text-primary gap-2"
           >
             {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
-            {copied ? 'Copied!' : 'Copy URL'}
+            {copied ? t.pitchDetail.actions.copied : t.pitchDetail.actions.copyUrl}
           </Button>
           <Button
             variant="outline"
@@ -84,7 +86,7 @@ export function PitchActionBar({ pitch }: PitchActionBarProps) {
             className="border-border text-text-secondary hover:text-text-primary gap-2"
           >
             <ExternalLink className="h-3.5 w-3.5" />
-            Open Preview
+            {t.pitchDetail.actions.openPreview}
           </Button>
           <Button
             variant="outline"

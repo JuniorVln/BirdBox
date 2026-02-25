@@ -3,31 +3,33 @@ import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { Search, Wand2, Send } from 'lucide-react'
 import { staggerContainer, staggerItem } from '@/lib/animations'
-
-const steps = [
-  {
-    icon: Search,
-    number: '01',
-    title: 'Find Leads',
-    description: 'Discover local businesses through Google Maps integration. Filter by category, rating, and location to find your ideal prospects.',
-  },
-  {
-    icon: Wand2,
-    number: '02',
-    title: 'AI Redesigns',
-    description: 'Our AI scrapes their existing website and generates a stunning, modern redesign using professional templates — in seconds.',
-  },
-  {
-    icon: Send,
-    number: '03',
-    title: 'Send & Track',
-    description: 'Send personalized outreach emails with live preview links. Track opens, collect feedback, and close more deals.',
-  },
-]
+import { useI18n } from '@/hooks/useI18n'
 
 export function HowItWorks() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t } = useI18n()
+
+  const steps = [
+    {
+      icon: Search,
+      number: '01',
+      title: t.landing.howItWorks.steps[0].title,
+      description: t.landing.howItWorks.steps[0].description,
+    },
+    {
+      icon: Wand2,
+      number: '02',
+      title: t.landing.howItWorks.steps[1].title,
+      description: t.landing.howItWorks.steps[1].description,
+    },
+    {
+      icon: Send,
+      number: '03',
+      title: t.landing.howItWorks.steps[2].title,
+      description: t.landing.howItWorks.steps[2].description,
+    },
+  ]
 
   return (
     <section id="how-it-works" className="py-24 px-6" ref={ref}>
@@ -39,10 +41,10 @@ export function HowItWorks() {
           className="text-center mb-16"
         >
           <motion.p variants={staggerItem} className="text-sm font-medium text-accent mb-3 uppercase tracking-wider">
-            How It Works
+            {t.landing.howItWorks.badge}
           </motion.p>
           <motion.h2 variants={staggerItem} className="text-3xl sm:text-4xl font-bold text-text-primary">
-            Three Steps to More Clients
+            {t.landing.howItWorks.title}
           </motion.h2>
         </motion.div>
 

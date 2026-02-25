@@ -21,7 +21,49 @@ export interface Lead {
   review_count: number | null
   category: string | null
   google_maps_data: Record<string, unknown> | null
+  // New Enrichment Fields
+  enrichment_status: 'pending' | 'enriching' | 'completed' | 'failed'
+  enrichment_data: Record<string, unknown>
+  instagram_data: Record<string, unknown>
+  linkedin_data: Record<string, unknown>
+  tech_stack: string[]
+  pagespeed_data: Record<string, unknown>
+  scraped_content: Record<string, unknown>
+  enrichment_last_run_at: string | null
   created_at: string
+}
+
+export interface DecisionMaker {
+  id: string
+  lead_id: string
+  name: string
+  role: string | null
+  linkedin_url: string | null
+  email: string | null
+  phone: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface LeadPainPoint {
+  pain_point: string
+  evidence: string
+  severity: 'high' | 'medium' | 'low'
+}
+
+export interface LeadIntelligence {
+  id: string
+  lead_id: string
+  ai_summary: string | null
+  identified_pain_points: LeadPainPoint[]
+  recommended_services: string[]
+  outreach_script_email: string | null
+  outreach_script_linkedin: string | null
+  health_score: number | null
+  is_qualified: boolean
+  disqualification_reason: string | null
+  generated_at: string
+  updated_at: string
 }
 
 export interface ScrapedData {

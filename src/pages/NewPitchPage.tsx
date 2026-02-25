@@ -5,14 +5,13 @@ import { useScraper } from '@/hooks/useScraper'
 import { useCreatePitch } from '@/hooks/usePitches'
 import { useGeneratePitch } from '@/hooks/useGeneratePitch'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/hooks/useI18n'
 import { StepIndicator } from '@/components/pitch/StepIndicator'
 import { PitchForm } from '@/components/pitch/PitchForm'
 import { ScrapingProgress } from '@/components/pitch/ScrapingProgress'
 import { TemplateSelector } from '@/components/pitch/TemplateSelector'
 import { GenerationComplete } from '@/components/pitch/GenerationComplete'
 import type { ScrapedData, PitchColors, Lead } from '@/types'
-
-const STEPS = ['Details', 'Analysis', 'Template', 'Complete']
 
 const DEFAULT_COLORS: PitchColors = {
   primary: '#2563eb',
@@ -23,6 +22,14 @@ const DEFAULT_COLORS: PitchColors = {
 export function NewPitchPage() {
   const location = useLocation()
   const leadFromState = (location.state as { lead?: Lead })?.lead
+  const { t } = useI18n()
+
+  const STEPS = [
+    t.newPitch.steps.details,
+    t.newPitch.steps.analysis,
+    t.newPitch.steps.template,
+    t.newPitch.steps.complete
+  ]
 
   const [step, setStep] = useState(0)
   const [businessName, setBusinessName] = useState('')

@@ -1,6 +1,7 @@
 import { Eye } from 'lucide-react'
 import { EmptyState } from '@/components/common/EmptyState'
 import { formatRelativeTime } from '@/lib/utils'
+import { useI18n } from '@/hooks/useI18n'
 import type { PitchView } from '@/types'
 
 interface PitchViewsProps {
@@ -8,14 +9,16 @@ interface PitchViewsProps {
 }
 
 export function PitchViews({ views }: PitchViewsProps) {
+  const { t } = useI18n()
+
   if (!views.length) {
     return (
       <div className="rounded-xl bg-surface border border-border p-5">
-        <h3 className="text-sm font-semibold text-text-primary mb-4">Views</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-4">{t.pitchDetail.views.title}</h3>
         <EmptyState
           icon={Eye}
-          title="No views yet"
-          description="Views will appear here when someone opens your pitch link."
+          title={t.pitchDetail.views.noViews}
+          description={t.pitchDetail.views.noViewsDescription}
           className="py-8"
         />
       </div>
@@ -25,7 +28,7 @@ export function PitchViews({ views }: PitchViewsProps) {
   return (
     <div className="rounded-xl bg-surface border border-border p-5">
       <h3 className="text-sm font-semibold text-text-primary mb-4">
-        Views ({views.length})
+        {t.pitchDetail.views.titleWithCount.replace('{count}', String(views.length))}
       </h3>
       <div className="space-y-3">
         {views.map((view) => (

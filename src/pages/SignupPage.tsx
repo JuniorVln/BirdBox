@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/hooks/useI18n'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,6 +21,7 @@ export function SignupPage() {
   const session = useAuthStore((s) => s.session)
   const loading = useAuthStore((s) => s.loading)
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   if (loading) return null
   if (session) return <Navigate to="/dashboard" replace />
@@ -55,9 +57,9 @@ export function SignupPage() {
     <AuthLayout>
       <Card className="bg-surface border-border">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-text-primary">Create your account</CardTitle>
+          <CardTitle className="text-2xl text-text-primary">{t.auth.createAccount}</CardTitle>
           <CardDescription className="text-text-secondary">
-            Start automating your design outreach today
+            {t.auth.createAccountDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,12 +72,12 @@ export function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-text-secondary">
-                Full Name
+                {t.auth.fullName}
               </Label>
               <Input
                 id="fullName"
                 type="text"
-                placeholder="John Smith"
+                placeholder={t.auth.fullNamePlaceholder}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -85,12 +87,12 @@ export function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-text-secondary">
-                Email
+                {t.auth.email}
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t.auth.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -100,12 +102,12 @@ export function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-text-secondary">
-                Password
+                {t.auth.password}
               </Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="At least 6 characters"
+                placeholder={t.auth.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -115,12 +117,12 @@ export function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-text-secondary">
-                Confirm Password
+                {t.auth.confirmPassword}
               </Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder={t.auth.confirmPasswordPlaceholder}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -136,17 +138,17 @@ export function SignupPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  {t.auth.creatingAccount}
                 </>
               ) : (
-                'Create account'
+                t.auth.createAccount
               )}
             </Button>
 
             <p className="text-center text-sm text-text-secondary">
-              Already have an account?{' '}
+              {t.auth.hasAccount}{' '}
               <Link to="/login" className="text-accent hover:text-accent-hover font-medium">
-                Sign in
+                {t.auth.signInLink}
               </Link>
             </p>
           </form>

@@ -4,6 +4,7 @@ import { Check, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { templates } from '@/templates'
+import { useI18n } from '@/hooks/useI18n'
 import type { ScrapedData } from '@/types'
 import { staggerContainer, staggerItem } from '@/lib/animations'
 
@@ -26,13 +27,14 @@ function getRecommendedTemplate(category: string): string {
 export function TemplateSelector({ scrapedData, onSelect, isGenerating = false }: TemplateSelectorProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const recommendedId = getRecommendedTemplate(scrapedData.category)
+  const { t } = useI18n()
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-text-primary mb-2">Choose a Template</h2>
+        <h2 className="text-2xl font-bold text-text-primary mb-2">{t.newPitch.templateSelector.title}</h2>
         <p className="text-text-secondary">
-          Select a design style for the pitch website. AI has recommended the best match.
+          {t.newPitch.templateSelector.description}
         </p>
       </div>
 
@@ -61,7 +63,7 @@ export function TemplateSelector({ scrapedData, onSelect, isGenerating = false }
               {isRecommended && (
                 <span className="absolute -top-2.5 right-3 flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-white">
                   <Sparkles className="h-3 w-3" />
-                  AI Pick
+                  {t.newPitch.templateSelector.aiPick}
                 </span>
               )}
 
@@ -105,7 +107,7 @@ export function TemplateSelector({ scrapedData, onSelect, isGenerating = false }
           disabled={!selectedId || isGenerating}
           className="bg-accent hover:bg-accent-hover text-white px-8 h-11"
         >
-          {isGenerating ? 'Generating...' : 'Generate Website'}
+          {isGenerating ? t.newPitch.templateSelector.generating : t.newPitch.templateSelector.generateWebsite}
         </Button>
       </div>
     </div>

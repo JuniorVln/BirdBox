@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { usePitch } from '@/hooks/usePitches'
+import { useI18n } from '@/hooks/useI18n'
 import { PitchActionBar } from '@/components/pitch/PitchActionBar'
 import { PitchPreview } from '@/components/pitch/PitchPreview'
 import { PitchMetadata } from '@/components/pitch/PitchMetadata'
@@ -13,16 +14,17 @@ import { fadeInUp } from '@/lib/animations'
 export function PitchDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { data: pitch, isLoading, error, refetch } = usePitch(id!)
+  const { t } = useI18n()
 
   if (isLoading) {
-    return <FullPageLoader text="Loading pitch..." />
+    return <FullPageLoader text={t.pitchDetail.loading} />
   }
 
   if (error || !pitch) {
     return (
       <ErrorState
-        title="Pitch not found"
-        message="The pitch you're looking for doesn't exist or you don't have access."
+        title={t.pitchDetail.notFound}
+        message={t.pitchDetail.notFoundDescription}
         onRetry={() => refetch()}
       />
     )
@@ -39,7 +41,7 @@ export function PitchDetailPage() {
             <PitchPreview html={pitch.generated_html} />
           ) : (
             <div className="rounded-xl border border-border bg-surface flex items-center justify-center h-[500px]">
-              <p className="text-text-muted">No preview available</p>
+              <p className="text-text-muted">{t.pitchDetail.noPreview}</p>
             </div>
           )}
         </div>

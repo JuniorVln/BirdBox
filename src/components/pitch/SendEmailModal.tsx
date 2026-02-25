@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useMarkPitchSent } from '@/hooks/usePitches'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/hooks/useI18n'
 import {
   generateEmailSubject,
   generateEmailBody,
@@ -29,6 +30,7 @@ interface SendEmailModalProps {
 export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProps) {
   const profile = useAuthStore((s) => s.profile)
   const markSent = useMarkPitchSent()
+  const { t } = useI18n()
 
   const publicUrl = `${window.location.origin}/p/${pitch.id}`
   const senderName = profile?.agency_name || profile?.full_name || 'Pitch AI'
@@ -75,16 +77,16 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-text-primary">
             <Mail className="h-5 w-5 text-accent" />
-            Send Email to {pitch.business_name}
+            {t.pitchDetail.sendEmailModal.title.replace('{name}', pitch.business_name)}
           </DialogTitle>
           <DialogDescription className="text-text-muted">
-            Compose your outreach email. Click "Open in Gmail" to send it.
+            {t.pitchDetail.sendEmailModal.description}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 mt-2">
           <div className="space-y-1.5">
-            <Label className="text-text-secondary text-xs">To</Label>
+            <Label className="text-text-secondary text-xs">{t.pitchDetail.sendEmailModal.to}</Label>
             <Input
               value={to}
               onChange={(e) => setTo(e.target.value)}
@@ -94,7 +96,7 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-text-secondary text-xs">Subject</Label>
+            <Label className="text-text-secondary text-xs">{t.pitchDetail.sendEmailModal.subject}</Label>
             <Input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -103,7 +105,7 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-text-secondary text-xs">Message</Label>
+            <Label className="text-text-secondary text-xs">{t.pitchDetail.sendEmailModal.message}</Label>
             <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
@@ -118,7 +120,7 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
               className="bg-accent hover:bg-accent-hover flex-1 gap-2"
             >
               <ExternalLink className="h-4 w-4" />
-              Open in Gmail
+              {t.pitchDetail.sendEmailModal.openGmail}
             </Button>
             <Button
               variant="outline"
@@ -126,7 +128,7 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
               className="border-border text-text-secondary hover:text-text-primary gap-2"
             >
               {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
-              {copied ? 'Copied!' : 'Copy Email'}
+              {copied ? t.pitchDetail.sendEmailModal.copied : t.pitchDetail.sendEmailModal.copyEmail}
             </Button>
           </div>
 
@@ -134,7 +136,7 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
             {markedSent ? (
               <div className="flex items-center justify-center gap-2 text-green-400 py-2">
                 <CheckCircle2 className="h-5 w-5" />
-                <span className="text-sm font-medium">Marked as sent!</span>
+                <span className="text-sm font-medium">{t.pitchDetail.sendEmailModal.markedAsSent}</span>
               </div>
             ) : (
               <Button
@@ -144,7 +146,7 @@ export function SendEmailModal({ pitch, open, onOpenChange }: SendEmailModalProp
                 className="w-full border-border text-text-secondary hover:text-text-primary gap-2"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                {markSent.isPending ? 'Updating...' : 'Mark as Sent'}
+                {markSent.isPending ? t.pitchDetail.sendEmailModal.updating : t.pitchDetail.sendEmailModal.markAsSent}
               </Button>
             )}
           </div>

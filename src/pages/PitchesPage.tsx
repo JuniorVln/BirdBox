@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Plus, FileText } from 'lucide-react'
 import { usePitches } from '@/hooks/usePitches'
+import { useI18n } from '@/hooks/useI18n'
 import { Button } from '@/components/ui/button'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { EmptyState } from '@/components/common/EmptyState'
@@ -12,6 +13,13 @@ import { staggerContainer, staggerItem } from '@/lib/animations'
 export function PitchesPage() {
   const { data: pitches, isLoading } = usePitches()
   const navigate = useNavigate()
+  const { t } = useI18n()
+
+  const formatPitchesTotal = (count: number) => {
+    return count === 1
+      ? t.pitches.pitchTotal.replace('{count}', String(count))
+      : t.pitches.pitchesTotal.replace('{count}', String(count))
+  }
 
   return (
     <motion.div
@@ -22,9 +30,9 @@ export function PitchesPage() {
     >
       <motion.div variants={staggerItem} className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-text-primary">All Pitches</h2>
+          <h2 className="text-lg font-semibold text-text-primary">{t.pitches.allPitches}</h2>
           <p className="text-sm text-text-secondary">
-            {pitches?.length ?? 0} pitch{(pitches?.length ?? 0) !== 1 ? 'es' : ''} total
+            {formatPitchesTotal(pitches?.length ?? 0)}
           </p>
         </div>
         <Button
@@ -32,7 +40,7 @@ export function PitchesPage() {
           className="bg-accent hover:bg-accent-hover text-white"
         >
           <Plus className="mr-2 h-4 w-4" />
-          New Pitch
+          {t.pitches.newPitch}
         </Button>
       </motion.div>
 
@@ -46,9 +54,9 @@ export function PitchesPage() {
         ) : !pitches?.length ? (
           <EmptyState
             icon={FileText}
-            title="No pitches yet"
-            description="Create your first pitch to start landing clients."
-            actionLabel="Create Pitch"
+            title={t.pitches.noPitchesYet}
+            description={t.pitches.noPitchesDescription}
+            actionLabel={t.pitches.createPitch}
             onAction={() => navigate('/dashboard/pitches/new')}
           />
         ) : (

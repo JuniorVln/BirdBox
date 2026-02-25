@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/hooks/useI18n'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import { fadeInUp } from '@/lib/animations'
 export function SettingsPage() {
   const { profile } = useAuth()
   const setProfile = useAuthStore((s) => s.setProfile)
+  const { t } = useI18n()
 
   const [fullName, setFullName] = useState(profile?.full_name ?? '')
   const [agencyName, setAgencyName] = useState(profile?.agency_name ?? '')
@@ -30,7 +32,7 @@ export function SettingsPage() {
     setIsSaving(true)
     setSaved(false)
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('profiles')
       .update({
         full_name: fullName,
@@ -44,7 +46,7 @@ export function SettingsPage() {
       .single()
 
     if (!error && data) {
-      setProfile(data)
+      setProfile(data as any)
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     }
@@ -61,16 +63,16 @@ export function SettingsPage() {
     >
       <Card className="bg-surface border-border">
         <CardHeader>
-          <CardTitle className="text-text-primary">Profile Settings</CardTitle>
+          <CardTitle className="text-text-primary">{t.settings.title}</CardTitle>
           <CardDescription className="text-text-secondary">
-            Update your profile information. This appears on generated websites.
+            {t.settings.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSave} className="space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-text-secondary">Full Name</Label>
+                <Label className="text-text-secondary">{t.settings.fullName}</Label>
                 <Input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
@@ -79,11 +81,11 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-text-secondary">Agency Name</Label>
+                <Label className="text-text-secondary">{t.settings.agencyName}</Label>
                 <Input
                   value={agencyName}
                   onChange={(e) => setAgencyName(e.target.value)}
-                  placeholder="Optional"
+                  placeholder={t.common.optional}
                   className="bg-background border-border text-text-primary placeholder:text-text-muted"
                 />
               </div>
@@ -92,10 +94,10 @@ export function SettingsPage() {
             <Separator className="bg-border" />
 
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-text-primary">Social Links</h3>
+              <h3 className="text-sm font-medium text-text-primary">{t.settings.socialLinks}</h3>
 
               <div className="space-y-2">
-                <Label className="text-text-secondary">LinkedIn</Label>
+                <Label className="text-text-secondary">{t.settings.linkedin}</Label>
                 <Input
                   value={linkedinUrl}
                   onChange={(e) => setLinkedinUrl(e.target.value)}
@@ -105,7 +107,7 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-text-secondary">Twitter / X</Label>
+                <Label className="text-text-secondary">{t.settings.twitter}</Label>
                 <Input
                   value={twitterUrl}
                   onChange={(e) => setTwitterUrl(e.target.value)}
@@ -115,7 +117,7 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-text-secondary">Website</Label>
+                <Label className="text-text-secondary">{t.settings.website}</Label>
                 <Input
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
@@ -134,14 +136,14 @@ export function SettingsPage() {
                 {isSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
+                    {t.common.saving}
                   </>
                 ) : (
-                  'Save Changes'
+                  t.settings.saveChanges
                 )}
               </Button>
               {saved && (
-                <span className="text-sm text-green-400">Changes saved!</span>
+                <span className="text-sm text-green-400">{t.settings.changesSaved}</span>
               )}
             </div>
           </form>

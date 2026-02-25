@@ -60,12 +60,16 @@ export function App() {
   )
 }
 
+import { useI18n } from '@/hooks/useI18n'
+
 function ComingSoon({ title }: { title: string }) {
+  const { t } = useI18n()
   return (
     <div className="flex flex-col items-center justify-center py-24">
       <div className="text-4xl mb-4">🚧</div>
       <h2 className="text-xl font-semibold text-text-primary mb-2">{title}</h2>
-      <p className="text-text-secondary">This feature is coming soon.</p>
+      <p className="text-text-secondary">{t.common.comingSoonDescription}</p>
     </div>
   )
 }
+

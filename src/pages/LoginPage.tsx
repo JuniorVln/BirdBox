@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/hooks/useI18n'
 import { AuthLayout } from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,6 +19,7 @@ export function LoginPage() {
   const session = useAuthStore((s) => s.session)
   const loading = useAuthStore((s) => s.loading)
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   if (loading) return null
   if (session) return <Navigate to="/dashboard" replace />
@@ -42,9 +44,9 @@ export function LoginPage() {
     <AuthLayout>
       <Card className="bg-surface border-border">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-text-primary">Welcome back</CardTitle>
+          <CardTitle className="text-2xl text-text-primary">{t.auth.welcomeBack}</CardTitle>
           <CardDescription className="text-text-secondary">
-            Sign in to your account to continue
+            {t.auth.signInDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -57,12 +59,12 @@ export function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-text-secondary">
-                Email
+                {t.auth.email}
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t.auth.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -72,12 +74,12 @@ export function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-text-secondary">
-                Password
+                {t.auth.password}
               </Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t.auth.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -93,17 +95,17 @@ export function LoginPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  {t.auth.signingIn}
                 </>
               ) : (
-                'Sign in'
+                t.auth.signIn
               )}
             </Button>
 
             <p className="text-center text-sm text-text-secondary">
-              Don&apos;t have an account?{' '}
+              {t.auth.noAccount}{' '}
               <Link to="/signup" className="text-accent hover:text-accent-hover font-medium">
-                Sign up
+                {t.auth.signUp}
               </Link>
             </p>
           </form>

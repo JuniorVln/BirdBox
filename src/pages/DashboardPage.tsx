@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Users, ClipboardCheck, Send, Eye } from 'lucide-react'
 import { usePitches } from '@/hooks/usePitches'
 import { useAudits } from '@/hooks/useAudits'
+import { useI18n } from '@/hooks/useI18n'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 import { staggerContainer, staggerItem } from '@/lib/animations'
@@ -12,15 +13,22 @@ export function DashboardPage() {
   const { data: prospects } = usePitches()
   const { data: audits } = useAudits()
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   const totalProspects = prospects?.length ?? 0
   const totalAudits = audits?.length ?? 0
   const contacted = prospects?.filter((p) => p.status !== 'draft').length ?? 0
   const opened = prospects?.filter((p) => p.status === 'opened' || p.status === 'feedback').length ?? 0
 
-  // Recent audits for display
   const recentAudits = audits?.slice(0, 5) ?? []
   const recentProspects = prospects?.slice(0, 5) ?? []
+
+  const getStatusLabel = (status: string) => {
+    if (status === 'draft') return t.dashboard.statusNew
+    if (status === 'sent') return t.dashboard.statusContacted
+    if (status === 'opened') return t.dashboard.statusOpened
+    return t.dashboard.statusResponded
+  }
 
   return (
     <motion.div
@@ -34,19 +42,19 @@ export function DashboardPage() {
       </motion.div>
 
       <motion.div variants={staggerItem} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users} label="Prospects" value={totalProspects} />
-        <StatCard icon={ClipboardCheck} label="Audits" value={totalAudits} />
-        <StatCard icon={Send} label="Contacted" value={contacted} />
-        <StatCard icon={Eye} label="Opened" value={opened} />
+        <StatCard icon={Users} label={t.dashboard.prospects} value={totalProspects} />
+        <StatCard icon={ClipboardCheck} label={t.dashboard.audits} value={totalAudits} />
+        <StatCard icon={Send} label={t.dashboard.contacted} value={contacted} />
+        <StatCard icon={Eye} label={t.dashboard.opened} value={opened} />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Prospects */}
         <motion.div variants={staggerItem}>
-          <h2 className="text-lg font-semibold text-text-primary mb-4">Recent Prospects</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-4">{t.dashboard.recentProspects}</h2>
           {recentProspects.length === 0 ? (
             <div className="p-8 rounded-lg bg-surface border border-border text-center">
-              <p className="text-text-muted text-sm">No prospects yet. Use the Prospector to find leads.</p>
+              <p className="text-text-muted text-sm">{t.dashboard.noProspectsYet}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -66,7 +74,7 @@ export function DashboardPage() {
                     'bg-yellow-500/20 text-yellow-400': p.status === 'opened',
                     'bg-green-500/20 text-green-400': p.status === 'feedback',
                   })}>
-                    {p.status === 'draft' ? 'New' : p.status === 'sent' ? 'Contacted' : p.status === 'opened' ? 'Opened' : 'Responded'}
+                    {getStatusLabel(p.status)}
                   </span>
                 </div>
               ))}
@@ -76,10 +84,10 @@ export function DashboardPage() {
 
         {/* Recent Audits */}
         <motion.div variants={staggerItem}>
-          <h2 className="text-lg font-semibold text-text-primary mb-4">Recent Audits</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-4">{t.dashboard.recentAudits}</h2>
           {recentAudits.length === 0 ? (
             <div className="p-8 rounded-lg bg-surface border border-border text-center">
-              <p className="text-text-muted text-sm">No audits yet. Run an audit on a prospect's website.</p>
+              <p className="text-text-muted text-sm">{t.dashboard.noAuditsYet}</p>
             </div>
           ) : (
             <div className="space-y-2">

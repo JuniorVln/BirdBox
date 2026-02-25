@@ -4,16 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-
-const navLinks = [
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Features', href: '#features' },
-  { label: 'Pricing', href: '#pricing' },
-]
+import { useI18n } from '@/hooks/useI18n'
+import { LanguageSwitcher as LanguageSelector } from '@/components/common/LanguageSwitcher'
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { t } = useI18n()
+
+  const navLinks = [
+    { label: t.landing.nav.howItWorks, href: '#how-it-works' },
+    { label: t.landing.nav.features, href: '#features' },
+    { label: t.landing.nav.pricing, href: '#pricing' },
+  ]
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -51,14 +54,15 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSelector />
             <Link to="/login">
               <Button variant="ghost" className="text-text-secondary hover:text-text-primary">
-                Sign in
+                {t.landing.nav.signIn}
               </Button>
             </Link>
             <Link to="/signup">
               <Button className="bg-accent hover:bg-accent-hover text-white">
-                Get Started
+                {t.landing.nav.getStarted}
               </Button>
             </Link>
           </div>
@@ -94,14 +98,17 @@ export function Navbar() {
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                <div className="mb-2">
+                  <LanguageSelector />
+                </div>
                 <Link to="/login" onClick={() => setMobileOpen(false)}>
                   <Button variant="ghost" className="w-full text-text-secondary">
-                    Sign in
+                    {t.landing.nav.signIn}
                   </Button>
                 </Link>
                 <Link to="/signup" onClick={() => setMobileOpen(false)}>
                   <Button className="w-full bg-accent hover:bg-accent-hover text-white">
-                    Get Started
+                    {t.landing.nav.getStarted}
                   </Button>
                 </Link>
               </div>

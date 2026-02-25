@@ -67,18 +67,26 @@ serve(async (req) => {
     const strategies = ['mobile', 'desktop'] as const
     const categories = 'performance,seo,accessibility,best-practices'
 
+    const googleApiKey = Deno.env.get('GOOGLE_API_KEY') || ''
+
     const results = await Promise.all(
       strategies.map(async (strategy) => {
         const apiUrl = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
           + '?url=' + encodeURIComponent(url)
           + '&category=' + categories
           + '&strategy=' + strategy
+          + (googleApiKey ? '&key=' + googleApiKey : '')
 
         const res = await fetch(apiUrl)
         if (!res.ok) {
           const errText = await res.text()
           console.error('PageSpeed API error (' + strategy + '):', res.status, errText)
-          throw new Error('PageSpeed API error: ' + res.status)
+          try {
+            const parsed = JSON.parse(errText)
+            throw new Error(`PageSpeed API error: ${parsed.error?.message || res.status}`)
+          } catch {
+            throw new Error(`PageSpeed API error: ${res.status}`)
+          }
         }
         return res.json() as Promise<PageSpeedResult>
       })
@@ -215,9 +223,14 @@ serve(async (req) => {
     )
   } catch (err) {
     console.error('audit-website error:', err)
+    // Return 200 with error property so the frontend can read the actual message
+    // instead of getting a generic "non-2xx status code" from Supabase client
     return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        success: false,
+        error: err instanceof Error ? err.message : 'Unknown error'
+      }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })

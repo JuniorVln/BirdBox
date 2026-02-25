@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Globe, ExternalLink, AlertTriangle, AlertCircle, Info, Lightbulb } from 'lucide-react'
 import { useAudit } from '@/hooks/useAudits'
+import { useI18n } from '@/hooks/useI18n'
 import { ScoreGauge, ScoreBar } from '@/components/audit/ScoreGauge'
 import { Button } from '@/components/ui/button'
 import { FullPageLoader } from '@/components/common/LoadingSpinner'
@@ -30,15 +31,16 @@ export function AuditDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: audit, isLoading } = useAudit(id!)
+  const { t } = useI18n()
 
   if (isLoading) return <FullPageLoader />
 
   if (!audit) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-text-primary">Audit not found</h2>
+        <h2 className="text-xl font-semibold text-text-primary">{t.auditDetail.notFound}</h2>
         <Button variant="outline" onClick={() => navigate('/dashboard/audits')} className="mt-4">
-          Back to Audits
+          {t.auditDetail.backToAudits}
         </Button>
       </div>
     )
@@ -72,7 +74,7 @@ export function AuditDetailPage() {
           </a>
         </div>
         {audit.overall_score !== null && (
-          <ScoreGauge score={audit.overall_score} label="Overall" size="lg" />
+          <ScoreGauge score={audit.overall_score} label={t.auditDetail.overall} size="lg" />
         )}
       </div>
 
@@ -80,19 +82,19 @@ export function AuditDetailPage() {
       {audit.status === 'completed' && (
         <div className="grid grid-cols-5 gap-4">
           <div className="flex flex-col items-center p-4 rounded-lg bg-surface border border-border">
-            <ScoreGauge score={audit.performance_score ?? 0} label="Performance" size="md" />
+            <ScoreGauge score={audit.performance_score ?? 0} label={t.auditDetail.performance} size="md" />
           </div>
           <div className="flex flex-col items-center p-4 rounded-lg bg-surface border border-border">
-            <ScoreGauge score={audit.seo_score ?? 0} label="SEO" size="md" />
+            <ScoreGauge score={audit.seo_score ?? 0} label={t.auditDetail.seo} size="md" />
           </div>
           <div className="flex flex-col items-center p-4 rounded-lg bg-surface border border-border">
-            <ScoreGauge score={audit.mobile_score ?? 0} label="Mobile" size="md" />
+            <ScoreGauge score={audit.mobile_score ?? 0} label={t.auditDetail.mobile} size="md" />
           </div>
           <div className="flex flex-col items-center p-4 rounded-lg bg-surface border border-border">
-            <ScoreGauge score={audit.accessibility_score ?? 0} label="A11y" size="md" />
+            <ScoreGauge score={audit.accessibility_score ?? 0} label={t.auditDetail.a11y} size="md" />
           </div>
           <div className="flex flex-col items-center p-4 rounded-lg bg-surface border border-border">
-            <ScoreGauge score={audit.best_practices_score ?? 0} label="Best Practices" size="md" />
+            <ScoreGauge score={audit.best_practices_score ?? 0} label={t.auditDetail.bestPractices} size="md" />
           </div>
         </div>
       )}
@@ -107,12 +109,12 @@ export function AuditDetailPage() {
       {/* Score Bars (compact view) */}
       {audit.status === 'completed' && (
         <div className="p-5 rounded-lg bg-surface border border-border space-y-3">
-          <h3 className="font-semibold text-text-primary mb-4">Score Breakdown</h3>
-          <ScoreBar score={audit.performance_score ?? 0} label="Performance" />
-          <ScoreBar score={audit.seo_score ?? 0} label="SEO" />
-          <ScoreBar score={audit.mobile_score ?? 0} label="Mobile" />
-          <ScoreBar score={audit.accessibility_score ?? 0} label="Accessibility" />
-          <ScoreBar score={audit.best_practices_score ?? 0} label="Best Practices" />
+          <h3 className="font-semibold text-text-primary mb-4">{t.auditDetail.scoreBreakdown}</h3>
+          <ScoreBar score={audit.performance_score ?? 0} label={t.auditDetail.performance} />
+          <ScoreBar score={audit.seo_score ?? 0} label={t.auditDetail.seo} />
+          <ScoreBar score={audit.mobile_score ?? 0} label={t.auditDetail.mobile} />
+          <ScoreBar score={audit.accessibility_score ?? 0} label={t.auditDetail.a11y} />
+          <ScoreBar score={audit.best_practices_score ?? 0} label={t.auditDetail.bestPractices} />
         </div>
       )}
 
@@ -120,7 +122,7 @@ export function AuditDetailPage() {
       {issues.length > 0 && (
         <div className="p-5 rounded-lg bg-surface border border-border">
           <h3 className="font-semibold text-text-primary mb-4">
-            Issues Found ({issues.length})
+            {t.auditDetail.issuesFound} ({issues.length})
           </h3>
           <div className="space-y-2">
             {issues.map((issue, i) => {
@@ -149,7 +151,7 @@ export function AuditDetailPage() {
         <div className="p-5 rounded-lg bg-surface border border-border">
           <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
             <Lightbulb className="h-4 w-4 text-yellow-400" />
-            Recommendations
+            {t.auditDetail.recommendations}
           </h3>
           <div className="space-y-3">
             {recommendations.map((rec, i) => (
@@ -157,7 +159,7 @@ export function AuditDetailPage() {
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-sm font-medium text-text-primary">{rec.title}</p>
                   <span className={cn('text-[10px] uppercase font-bold', impactColor[rec.impact])}>
-                    {rec.impact} impact
+                    {rec.impact} {t.auditDetail.impact}
                   </span>
                 </div>
                 <p className="text-xs text-text-secondary">{rec.description}</p>
@@ -171,8 +173,8 @@ export function AuditDetailPage() {
       {audit.status === 'failed' && (
         <div className="p-5 rounded-lg bg-red-400/5 border border-red-400/20 text-center">
           <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-          <p className="text-red-400 font-medium">Audit failed</p>
-          <p className="text-sm text-text-muted mt-1">{audit.error_message ?? 'Unknown error'}</p>
+          <p className="text-red-400 font-medium">{t.auditDetail.auditFailed}</p>
+          <p className="text-sm text-text-muted mt-1">{audit.error_message ?? t.auditDetail.unknownError}</p>
         </div>
       )}
     </motion.div>

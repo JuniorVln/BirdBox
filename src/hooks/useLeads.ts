@@ -43,8 +43,8 @@ export function useCreateLead() {
         .from('leads')
         .insert({
           user_id: user!.id,
-          ...input,
-        })
+          ...(input as any),
+        } as any)
         .select()
         .single()
 
@@ -54,5 +54,29 @@ export function useCreateLead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] })
     },
+  })
+}
+
+export function useLead(id: string) {
+  return useQuery({
+    queryKey: ['lead', id],
+    queryFn: async () => {
+      // Fetch lead and its relations (Decision Makers, Intelligence)
+      const [leadRes, dmRes, intelRes] = await Promise.all([
+        supabase.from('leads').select('*').eq('id', id).single(),
+        supabase.from('decision_makers').select('*').eq('lead_id', id),
+        supabase.from('lead_intelligence').select('*').eq('lead_id', id).maybeSingle()
+      ])
+
+      if (leadRes.error) throw leadRes.error
+      // Ignore errors for optional relations
+
+      return {
+        ...(leadRes.data as any),
+        decision_makers: dmRes.data || [],
+        intelligence: intelRes.data || null
+      } as Lead & { decision_makers: any[], intelligence: any }
+    },
+    enabled: !!id,
   })
 }

@@ -2,43 +2,45 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Search, Globe, Layout, Mail, Eye, MessageSquare } from 'lucide-react'
 import { staggerContainer, staggerItem } from '@/lib/animations'
-
-const features = [
-  {
-    icon: Search,
-    title: 'Lead Discovery',
-    description: 'Find local businesses through Google Maps with smart filters for rating, category, and website availability.',
-  },
-  {
-    icon: Globe,
-    title: 'Website Scraping',
-    description: 'Automatically extract content, images, testimonials, and contact info from any business website.',
-  },
-  {
-    icon: Layout,
-    title: 'AI Templates',
-    description: 'Choose from professional templates. Our AI populates them with scraped content for instant redesigns.',
-  },
-  {
-    icon: Mail,
-    title: 'Email Outreach',
-    description: 'Send personalized emails with live preview links directly from the platform via Gmail integration.',
-  },
-  {
-    icon: Eye,
-    title: 'Open Tracking',
-    description: 'Know exactly when prospects view your pitch. Track opens, locations, and time spent on page.',
-  },
-  {
-    icon: MessageSquare,
-    title: 'Feedback Collection',
-    description: 'Built-in feedback forms let prospects rate designs and request changes — right from the pitch.',
-  },
-]
+import { useI18n } from '@/hooks/useI18n'
 
 export function Features() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t } = useI18n()
+
+  const features = [
+    {
+      icon: Search,
+      title: t.landing.features.items[0].title,
+      description: t.landing.features.items[0].description,
+    },
+    {
+      icon: Globe,
+      title: t.landing.features.items[1].title,
+      description: t.landing.features.items[1].description,
+    },
+    {
+      icon: Layout,
+      title: t.landing.features.items[2].title,
+      description: t.landing.features.items[2].description,
+    },
+    {
+      icon: Mail,
+      title: t.landing.features.items[3].title,
+      description: t.landing.features.items[3].description,
+    },
+    {
+      icon: Eye,
+      title: t.landing.features.items[4].title,
+      description: t.landing.features.items[4].description,
+    },
+    {
+      icon: MessageSquare,
+      title: t.landing.features.items[5].title,
+      description: t.landing.features.items[5].description,
+    },
+  ]
 
   return (
     <section id="features" className="py-24 px-6 bg-surface/30" ref={ref}>
@@ -50,10 +52,10 @@ export function Features() {
           className="text-center mb-16"
         >
           <motion.p variants={staggerItem} className="text-sm font-medium text-accent mb-3 uppercase tracking-wider">
-            Features
+            {t.landing.features.badge}
           </motion.p>
           <motion.h2 variants={staggerItem} className="text-3xl sm:text-4xl font-bold text-text-primary">
-            Everything You Need to Close Deals
+            {t.landing.features.title}
           </motion.h2>
         </motion.div>
 

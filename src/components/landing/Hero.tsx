@@ -3,8 +3,11 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { staggerContainer, staggerItem } from '@/lib/animations'
+import { useI18n } from '@/hooks/useI18n'
 
 export function Hero() {
+  const { t } = useI18n()
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
       {/* Background effects */}
@@ -30,7 +33,7 @@ export function Hero() {
         <motion.div variants={staggerItem}>
           <span className="inline-flex items-center gap-2 rounded-full bg-accent/10 border border-accent/20 px-4 py-1.5 text-sm text-accent mb-6">
             <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-            AI-Powered Design Outreach
+            {t.landing.hero.badge}
           </span>
         </motion.div>
 
@@ -38,23 +41,22 @@ export function Hero() {
           variants={staggerItem}
           className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6"
         >
-          <span className="gradient-text">Turn Any Website</span>
+          <span className="gradient-text">{t.landing.hero.titleSpan1}</span>
           <br />
-          <span className="gradient-text">Into a Winning Pitch</span>
+          <span className="gradient-text">{t.landing.hero.titleSpan2}</span>
         </motion.h1>
 
         <motion.p
           variants={staggerItem}
           className="text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto mb-10"
         >
-          Scrape any business website, generate a stunning redesign with AI, and send
-          personalized outreach — all in under 60 seconds.
+          {t.landing.hero.subtitle}
         </motion.p>
 
         <motion.div variants={staggerItem} className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link to="/signup">
             <Button size="lg" className="bg-accent hover:bg-accent-hover text-white px-8 h-12 text-base">
-              Start Free
+              {t.landing.hero.startFree}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
@@ -64,7 +66,7 @@ export function Hero() {
             className="border-border text-text-secondary hover:text-text-primary hover:bg-surface h-12 text-base"
           >
             <Play className="mr-2 h-4 w-4" />
-            Watch Demo
+            {t.landing.hero.watchDemo}
           </Button>
         </motion.div>
 
@@ -83,9 +85,9 @@ export function Hero() {
             <div className="aspect-[16/9] rounded-b-lg bg-gradient-to-br from-surface via-surface-raised to-background flex items-center justify-center">
               <div className="grid grid-cols-3 gap-4 p-8 w-full max-w-xl">
                 {[
-                  { label: 'Total Pitches', value: '247' },
-                  { label: 'Open Rate', value: '68%' },
-                  { label: 'Responses', value: '43' },
+                  { label: t.landing.hero.stats.totalPitches, value: '247' },
+                  { label: t.landing.hero.stats.openRate, value: '68%' },
+                  { label: t.landing.hero.stats.responses, value: '43' },
                 ].map((stat) => (
                   <div
                     key={stat.label}

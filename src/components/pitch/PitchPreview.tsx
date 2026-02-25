@@ -3,15 +3,16 @@ import { motion } from 'framer-motion'
 import { Monitor, Tablet, Smartphone } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/hooks/useI18n'
 
 interface PitchPreviewProps {
   html: string
 }
 
 const devices = [
-  { id: 'desktop', icon: Monitor, label: 'Desktop', width: '100%' },
-  { id: 'tablet', icon: Tablet, label: 'Tablet', width: '768px' },
-  { id: 'mobile', icon: Smartphone, label: 'Mobile', width: '375px' },
+  { id: 'desktop', icon: Monitor, labelKey: 'desktop', width: '100%' },
+  { id: 'tablet', icon: Tablet, labelKey: 'tablet', width: '768px' },
+  { id: 'mobile', icon: Smartphone, labelKey: 'mobile', width: '375px' },
 ] as const
 
 type DeviceType = (typeof devices)[number]['id']
@@ -19,6 +20,11 @@ type DeviceType = (typeof devices)[number]['id']
 export function PitchPreview({ html }: PitchPreviewProps) {
   const [device, setDevice] = useState<DeviceType>('desktop')
   const currentDevice = devices.find((d) => d.id === device)!
+  const { t } = useI18n()
+
+  const getLabel = (key: string) => {
+    return t.pitchDetail.preview[key as keyof typeof t.pitchDetail.preview]
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -38,7 +44,7 @@ export function PitchPreview({ html }: PitchPreviewProps) {
             )}
           >
             <d.icon className="h-4 w-4" />
-            <span className="hidden sm:inline text-xs">{d.label}</span>
+            <span className="hidden sm:inline text-xs">{getLabel(d.labelKey)}</span>
           </Button>
         ))}
       </div>
@@ -49,7 +55,9 @@ export function PitchPreview({ html }: PitchPreviewProps) {
           <div className="h-2.5 w-2.5 rounded-full bg-red-500/50" />
           <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/50" />
           <div className="h-2.5 w-2.5 rounded-full bg-green-500/50" />
-          <span className="ml-3 text-[11px] text-text-muted">Preview — {currentDevice.label}</span>
+          <span className="ml-3 text-[11px] text-text-muted">
+            {t.pitchDetail.preview.previewLabel.replace('{label}', getLabel(currentDevice.labelKey))}
+          </span>
         </div>
         <div className="flex justify-center bg-zinc-900 overflow-auto" style={{ minHeight: '500px' }}>
           <motion.iframe
