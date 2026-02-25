@@ -43,7 +43,7 @@ export function Header({ title }: HeaderProps) {
               </AvatarFallback>
             </Avatar>
             <span className="text-sm text-text-secondary hidden sm:block">
-              {profile?.full_name ?? 'User'}
+              {profile?.full_name ?? t.common.user}
             </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-surface border-border">

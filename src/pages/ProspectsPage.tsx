@@ -97,11 +97,11 @@ export function ProspectsPage() {
                 <div className="space-y-2 text-sm text-text-secondary mt-2">
                   <div className="flex items-center gap-2">
                     <Globe className="h-4 w-4 shrink-0 text-text-muted" />
-                    <span className="truncate">{lead.website_url ?? 'No website'}</span>
+                    <span className="truncate">{lead.website_url ?? t.common.noWebsite}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 shrink-0 text-text-muted" />
-                    <span className="truncate">{lead.email ?? 'No email'}</span>
+                    <span className="truncate">{lead.email ?? t.common.noEmail}</span>
                   </div>
                 </div>
               </div>

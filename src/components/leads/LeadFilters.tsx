@@ -28,7 +28,7 @@ export function LeadFilters({ filters, onFilterChange, totalResults, filteredCou
     <div className="flex flex-wrap items-center gap-4 py-3 px-4 bg-surface rounded-lg border border-border">
       <div className="flex items-center gap-2 text-sm text-text-secondary">
         <Filter className="h-4 w-4" />
-        <span>Filters{activeCount > 0 ? ` (${activeCount})` : ''}</span>
+        <span>{t.leads.filtersLabel}{activeCount > 0 ? ` (${activeCount})` : ''}</span>
       </div>
 
       <div className="h-5 w-px bg-border" />
@@ -41,7 +41,7 @@ export function LeadFilters({ filters, onFilterChange, totalResults, filteredCou
           onChange={(e) => onFilterChange({ ...filters, minRating: Number(e.target.value) })}
           className="bg-surface-raised border border-border rounded px-2 py-1 text-sm text-text-primary"
         >
-          <option value={0}>Any</option>
+          <option value={0}>{t.leads.filters.any}</option>
           <option value={3}>3+</option>
           <option value={3.5}>3.5+</option>
           <option value={4}>4+</option>

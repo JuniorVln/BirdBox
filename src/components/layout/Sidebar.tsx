@@ -98,10 +98,10 @@ export function Sidebar() {
             </Avatar>
             <div className="flex-1 overflow-hidden">
               <p className="text-sm font-medium text-text-primary truncate">
-                {profile.full_name ?? 'User'}
+                {profile.full_name ?? t.common.user}
               </p>
               <p className="text-xs text-text-muted truncate">
-                {profile.agency_name ?? 'Free plan'}
+                {profile.agency_name ?? t.common.freePlan}
               </p>
             </div>
           </div>

@@ -91,13 +91,13 @@ export function LeadCard({ lead, onCreatePitch, onRunAudit, index = 0 }: LeadCar
             {lead.website_url && (
               <Badge variant="outline" className="border-emerald-800 text-emerald-400 text-xs">
                 <Globe className="h-3 w-3 mr-1" />
-                Website
+                {t.common.website}
               </Badge>
             )}
             {lead.email && (
               <Badge variant="outline" className="border-blue-800 text-blue-400 text-xs">
                 <Mail className="h-3 w-3 mr-1" />
-                Email
+                {t.common.email}
               </Badge>
             )}
           </div>

@@ -26,7 +26,7 @@ export function ProspectDetailPage() {
   if (!lead) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-text-primary">Lead not found</h2>
+        <h2 className="text-xl font-semibold text-text-primary">{t.prospectDetail.leadNotFound}</h2>
         <Button variant="outline" onClick={() => navigate('/dashboard/prospects')} className="mt-4">
           {t.common.back}
         </Button>
@@ -313,7 +313,7 @@ export function ProspectDetailPage() {
                     )}
                   </Button>
                   {!isEnrichmentDone && (
-                    <p className="text-xs text-text-muted mt-2">Run "Deep Enrich" first to unlock this</p>
+                    <p className="text-xs text-text-muted mt-2">{t.prospectDetail.deepEnrichFirst}</p>
                   )}
                 </div>
               ) : (

@@ -31,12 +31,12 @@ export function SignupPage() {
     setError('')
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setError(t.auth.passwordMismatch)
       return
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(t.auth.passwordTooShort)
       return
     }
 
@@ -46,7 +46,7 @@ export function SignupPage() {
       await signUp(email, password, fullName)
       navigate('/dashboard')
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to create account'
+      const message = err instanceof Error ? err.message : t.auth.failedToCreateAccount
       setError(message)
     } finally {
       setIsSubmitting(false)

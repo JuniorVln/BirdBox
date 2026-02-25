@@ -56,7 +56,7 @@ export function AuditsPage() {
     } catch (err) {
       toast({
         title: t.audits.auditFailed,
-        description: err instanceof Error ? err.message : 'Something went wrong',
+        description: err instanceof Error ? err.message : t.common.somethingWentWrong,
         variant: 'destructive',
       })
     }

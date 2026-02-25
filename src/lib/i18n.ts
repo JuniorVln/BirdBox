@@ -20,6 +20,13 @@ export const translations = {
             retry: 'Tentar novamente',
             comingSoon: 'Em breve',
             comingSoonDescription: 'Esta funcionalidade estará disponível em breve.',
+            user: 'Usuário',
+            freePlan: 'Plano Gratuito',
+            somethingWentWrong: 'Algo deu errado',
+            noWebsite: 'Sem website',
+            noEmail: 'Sem e-mail',
+            website: 'Website',
+            email: 'E-mail',
         },
 
         // ─── Auth ──────────────────────────────────
@@ -44,6 +51,9 @@ export const translations = {
             hasAccount: 'Já tem uma conta?',
             signInLink: 'Faça login',
             signOut: 'Sair',
+            passwordMismatch: 'As senhas não coincidem',
+            passwordTooShort: 'A senha deve ter pelo menos 6 caracteres',
+            failedToCreateAccount: 'Falha ao criar conta',
         },
 
         // ─── Navigation / Sidebar ──────────────────
@@ -98,8 +108,10 @@ export const translations = {
             searchFailed: 'Busca falhou',
             saveLeadButton: 'Salvar Lead',
             runAuditButton: 'Auditar Site',
+            filtersLabel: 'Filtros',
             filters: {
                 minRating: 'Nota mínima',
+                any: 'Qualquer',
                 hasWebsite: 'Com website',
                 hasEmail: 'Com e-mail',
                 hasPhone: 'Com telefone',
@@ -171,6 +183,8 @@ export const translations = {
             pitchTheseServices: 'SERVIÇOS PARA OFERECER:',
             emailScripts: 'SCRIPTS DE E-MAIL:',
             noScriptGenerated: 'Nenhum script gerado.',
+            leadNotFound: 'Lead não encontrado',
+            deepEnrichFirst: 'Execute "Enriquecer Dados" primeiro para desbloquear',
         },
 
         // ─── Audits ────────────────────────────────
@@ -458,6 +472,13 @@ export const translations = {
             retry: 'Try again',
             comingSoon: 'Coming Soon',
             comingSoonDescription: 'This feature is coming soon.',
+            user: 'User',
+            freePlan: 'Free plan',
+            somethingWentWrong: 'Something went wrong',
+            noWebsite: 'No website',
+            noEmail: 'No email',
+            website: 'Website',
+            email: 'Email',
         },
 
         // ─── Auth ──────────────────────────────────
@@ -482,6 +503,9 @@ export const translations = {
             hasAccount: 'Already have an account?',
             signInLink: 'Sign in',
             signOut: 'Sign out',
+            passwordMismatch: 'Passwords do not match',
+            passwordTooShort: 'Password must be at least 6 characters',
+            failedToCreateAccount: 'Failed to create account',
         },
 
         // ─── Navigation / Sidebar ──────────────────
@@ -536,8 +560,10 @@ export const translations = {
             searchFailed: 'Search failed',
             saveLeadButton: 'Save Lead',
             runAuditButton: 'Run Audit',
+            filtersLabel: 'Filters',
             filters: {
                 minRating: 'Min. rating',
+                any: 'Any',
                 hasWebsite: 'Has website',
                 hasEmail: 'Has email',
                 hasPhone: 'Has phone',
@@ -609,6 +635,8 @@ export const translations = {
             pitchTheseServices: 'PITCH THESE SERVICES:',
             emailScripts: 'EMAIL SCRIPTS:',
             noScriptGenerated: 'No script generated.',
+            leadNotFound: 'Lead not found',
+            deepEnrichFirst: 'Run "Deep Enrich" first to unlock this',
         },
 
         // ─── Audits ────────────────────────────────
