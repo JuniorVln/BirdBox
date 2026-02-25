@@ -28,3 +28,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code
+.claude/
+
+# Supabase local temp
+supabase/.temp/
