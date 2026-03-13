@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Toaster } from '@/components/ui/toaster'
+import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 
 // Pages
 import { LandingPage } from '@/pages/LandingPage'
@@ -16,13 +17,16 @@ import { AuditDetailPage } from '@/pages/AuditDetailPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { PublicPitchPage } from '@/pages/PublicPitchPage'
 import { LeadsPage } from '@/pages/LeadsPage'
+import { PitchesPage } from '@/pages/PitchesPage'
+import { PitchDetailPage } from '@/pages/PitchDetailPage'
+import { NewPitchPage } from '@/pages/NewPitchPage'
 
 export function App() {
   // Initialize auth listener
   useAuth()
 
   return (
-    <>
+    <ErrorBoundary>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
@@ -47,16 +51,17 @@ export function App() {
           <Route path="audits/:id" element={<AuditDetailPage />} />
           <Route path="analytics" element={<ComingSoon title="Analytics" />} />
           <Route path="settings" element={<SettingsPage />} />
-          {/* Legacy redirects */}
-          <Route path="pitches" element={<Navigate to="/dashboard/prospects" replace />} />
-          <Route path="pitches/new" element={<Navigate to="/dashboard/leads" replace />} />
+          {/* Pitch flow */}
+          <Route path="pitches" element={<PitchesPage />} />
+          <Route path="pitches/new" element={<NewPitchPage />} />
+          <Route path="pitches/:id" element={<PitchDetailPage />} />
         </Route>
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
-    </>
+    </ErrorBoundary>
   )
 }
 

@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/hooks/useI18n'
 
 interface EnrichLeadResponse {
     success: boolean
@@ -10,6 +12,8 @@ interface EnrichLeadResponse {
 
 export function useEnrichLead() {
     const queryClient = useQueryClient()
+    const { toast } = useToast()
+    const { t } = useI18n()
 
     return useMutation({
         mutationFn: async (leadId: string): Promise<EnrichLeadResponse> => {
@@ -31,9 +35,15 @@ export function useEnrichLead() {
             return data as EnrichLeadResponse
         },
         onSuccess: (_, leadId) => {
-            // Invalidate both the list and the single item queries to refresh UI
             queryClient.invalidateQueries({ queryKey: ['leads'] })
             queryClient.invalidateQueries({ queryKey: ['lead', leadId] })
-        }
+        },
+        onError: (error: Error) => {
+            toast({
+                title: t.prospectDetail.enrichmentFailed,
+                description: error.message,
+                variant: 'destructive',
+            })
+        },
     })
 }

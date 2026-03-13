@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import { getTemplateById } from '@/templates'
 import type { ScrapedData, PitchColors } from '@/types'
+import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/hooks/useI18n'
 
 interface GeneratePitchParams {
   scrapedData: ScrapedData
@@ -12,6 +14,8 @@ interface GeneratePitchParams {
 
 export function useGeneratePitch() {
   const profile = useAuthStore((s) => s.profile)
+  const { toast } = useToast()
+  const { t } = useI18n()
 
   return useMutation({
     mutationFn: async (params: GeneratePitchParams): Promise<string> => {
@@ -38,6 +42,13 @@ export function useGeneratePitch() {
 
         return template.generate(params.scrapedData, params.colors, profile!)
       }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t.common.somethingWentWrong,
+        description: error.message,
+        variant: 'destructive',
+      })
     },
   })
 }

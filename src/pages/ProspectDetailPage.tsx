@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Globe, Mail, Phone, MapPin, Star, Activity, User, MonitorSmartphone, BrainCircuit, Play, CheckCircle2, AlertTriangle, Lightbulb, Loader2 } from 'lucide-react'
+import { ArrowLeft, Globe, Mail, Phone, MapPin, Star, Activity, User, MonitorSmartphone, BrainCircuit, Play, CheckCircle2, AlertTriangle, Lightbulb, Loader2, FileText } from 'lucide-react'
 import { useLead } from '@/hooks/useLeads'
 import { useEnrichLead } from '@/hooks/useEnrichLead'
 import { useGenerateIntelligence } from '@/hooks/useGenerateIntelligence'
 import { useI18n } from '@/hooks/useI18n'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { FullPageLoader } from '@/components/common/LoadingSpinner'
 import { cn } from '@/lib/utils'
@@ -14,6 +15,7 @@ export function ProspectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useI18n()
+  const { toast } = useToast()
 
   const { data: lead, isLoading } = useLead(id!)
   const { mutate: enrichLead, isPending: isEnriching } = useEnrichLead()
@@ -39,7 +41,7 @@ export function ProspectDetailPage() {
 
   const handleEnrich = () => {
     if (!lead.website_url) {
-      alert(t.prospectDetail.noWebsiteAlert)
+      toast({ title: t.prospectDetail.noWebsiteAlert, variant: 'destructive' })
       return
     }
     enrichLead(lead.id)
@@ -92,6 +94,16 @@ export function ProspectDetailPage() {
         </div>
 
         <div className="flex items-center gap-3 pl-12 md:pl-0">
+          <Button
+            onClick={() => navigate('/dashboard/pitches/new', { state: { lead } })}
+            variant="outline"
+            className="border-accent/40 text-accent hover:bg-accent/10"
+            disabled={!lead.website_url}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            {t.pitches.createPitch}
+          </Button>
+
           <Button
             onClick={() => navigate(`/dashboard/audits?prospect=${lead.id}&url=${encodeURIComponent(lead.website_url ?? '')}&name=${encodeURIComponent(lead.business_name)}`)}
             variant="outline"

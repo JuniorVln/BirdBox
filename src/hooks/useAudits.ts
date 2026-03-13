@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import type { Audit } from '@/types'
+import { useToast } from '@/hooks/use-toast'
+import { useI18n } from '@/hooks/useI18n'
 
 export function useAudits() {
   const user = useAuthStore((s) => s.user)
@@ -48,6 +50,8 @@ interface RunAuditInput {
 export function useRunAudit() {
   const queryClient = useQueryClient()
   const user = useAuthStore((s) => s.user)
+  const { toast } = useToast()
+  const { t } = useI18n()
 
   return useMutation({
     mutationFn: async (input: RunAuditInput) => {
@@ -105,7 +109,6 @@ export function useRunAudit() {
 
         const { data: updated, error: updateError } = await supabase
           .from('audits')
-          // @ts-expect-error Supabase types mismatch
           .update({
             status: 'completed',
             overall_score: overallScore,
@@ -138,6 +141,13 @@ export function useRunAudit() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['audits'] })
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t.audits.auditFailed,
+        description: error.message,
+        variant: 'destructive',
+      })
     },
   })
 }

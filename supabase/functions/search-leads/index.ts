@@ -6,24 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-interface ApifyPlace {
-  title?: string
-  address?: string
-  phoneUnformatted?: string
-  phone?: string
-  website?: string
-  totalScore?: number
-  reviewsCount?: number
-  categoryName?: string
-  emails?: string[]
-  socialNetworkUrls?: {
-    linkedin?: string
-    twitter?: string
-    instagram?: string
-    facebook?: string
-  }
-  location?: { lat: number; lng: number }
-  [key: string]: unknown
+// Configure GOOGLE_API_KEY in Supabase Dashboard → Settings → Edge Functions → Secrets
+const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY')
+
+interface PlaceResult {
+  displayName?: { text: string }
+  formattedAddress?: string
+  nationalPhoneNumber?: string
+  websiteUri?: string
+  rating?: number
+  userRatingCount?: number
+  primaryTypeDisplayName?: { text: string }
+  googleMapsUri?: string
 }
 
 serve(async (req) => {
@@ -32,7 +26,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query, businessType, location, limit = 10 } = await req.json()
+    const { query, businessType, location, limit = 20 } = await req.json()
 
     if (!query && (!businessType || !location)) {
       return new Response(
@@ -41,62 +35,59 @@ serve(async (req) => {
       )
     }
 
-    const apiKey = Deno.env.get('APIFY_API_KEY')
-    if (!apiKey) {
+    if (!GOOGLE_API_KEY) {
       return new Response(
-        JSON.stringify({ success: false, error: 'APIFY_API_KEY not configured' }),
+        JSON.stringify({ success: false, error: 'GOOGLE_API_KEY not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    const searchQuery = query || `${businessType} in ${location}`
-    
-    // Apify run-sync-get-dataset-items endpoint for compass/google-maps-extractor
-    const apifyUrl = `https://api.apify.com/v2/acts/compass~google-maps-extractor/run-sync-get-dataset-items?token=${apiKey}`
-    
-    const apifyPayload = {
-      searchStringsArray: [searchQuery],
-      maxCrawledPlacesPerSearch: limit,
-      extractEmailsAndContacts: true,
-      maxImages: 1,
-      maxReviews: 0,
-      language: "en"
-    }
+    const searchQuery = query || `${businessType} ${location}`
+    const maxResults = Math.min(limit, 20) // Places API max is 20
 
-    console.log('Calling Apify with payload:', apifyPayload)
+    console.log('Calling Google Places API with query:', searchQuery)
 
-    const response = await fetch(apifyUrl, {
+    const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Goog-Api-Key': GOOGLE_API_KEY,
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.primaryTypeDisplayName,places.googleMapsUri',
       },
-      body: JSON.stringify(apifyPayload),
+      body: JSON.stringify({
+        textQuery: searchQuery,
+        maxResultCount: maxResults,
+        languageCode: 'pt-BR',
+      }),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Apify error:', response.status, errorText)
+      console.error('Google Places error:', response.status, errorText)
       return new Response(
-        JSON.stringify({ success: false, error: 'Apify error: ' + response.status }),
+        JSON.stringify({ success: false, error: `Google Places API error: ${response.status}` }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     const result = await response.json()
-    const places: ApifyPlace[] = Array.isArray(result) ? result : []
+    const places: PlaceResult[] = result.places || []
 
     const leads = places
-      .filter((p: ApifyPlace) => p.title)
-      .map((p: ApifyPlace) => ({
-        business_name: p.title || 'Unknown',
-        address: p.address || null,
-        phone: p.phoneUnformatted || p.phone || null,
-        website_url: p.website || null,
-        email: p.emails && p.emails.length > 0 ? p.emails[0] : null,
-        rating: p.totalScore || null,
-        review_count: p.reviewsCount || null,
-        category: p.categoryName || null,
-        google_maps_data: p,
+      .filter((p) => p.displayName?.text)
+      .map((p) => ({
+        business_name: p.displayName!.text,
+        address: p.formattedAddress || null,
+        phone: p.nationalPhoneNumber || null,
+        website_url: p.websiteUri || null,
+        email: null, // Places API doesn't return emails
+        rating: p.rating || null,
+        review_count: p.userRatingCount || null,
+        category: p.primaryTypeDisplayName?.text || null,
+        google_maps_data: {
+          googleMapsUri: p.googleMapsUri,
+          source: 'google_places_api',
+        },
       }))
 
     return new Response(
