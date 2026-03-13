@@ -241,11 +241,11 @@ O projeto está em estágio de MVP funcional com arquitetura sólida (React + Vi
 #### [SEC-01] CRÍTICO — API key do Google exposta no source code
 - **Arquivo:** [supabase/functions/search-leads/index.ts](supabase/functions/search-leads/index.ts#L11)
 - **Linha:** 11
-- **Código atual:**
+- **Código atual (CORRIGIDO):**
   ```ts
-  const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY') ?? 'AIzaSyCw7S9jLuasLuFBBMx1m0lwEXCFpF4dzk8'
+  const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY')
   ```
-- **Problema:** Uma chave de API real está hardcoded como fallback e está visível no histórico do git. Mesmo que a env var esteja configurada, a chave já foi comprometida ao ser commitada.
+- **Problema:** Uma chave de API real estava hardcoded como fallback. A key foi removida do código e deve ser configurada apenas via Supabase Secrets.
 - **Ações necessárias:**
   1. Revogar imediatamente a chave exposta no Google Cloud Console
   2. Gerar nova chave e configurar apenas como secret no Supabase Dashboard
